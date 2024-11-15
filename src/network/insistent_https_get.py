@@ -3,6 +3,7 @@ import time
 import socket
 import logging
 import http.client
+import urllib.parse
 
 from src.network.RequestFailError import RequestFailError
 
@@ -23,26 +24,42 @@ logger = logging.getLogger(__name__)
 
 
 def insistent_https_get(server : str,
-                        url : str,
+                        server_path : str,
+                        args : dict[str : str] = dict(),
                         request_for : str = None,
                         accession_number : str = None,
-                        timeout : int = 30) -> str:
+                        timeout : int = 30,
+                        max_attempts: int = 3) -> str:
     # Function performs an 'insistent' HTTPS request.
-    # It means that the function tries to get the response
-    #     again and again if the request fails.
+    # It means that the function performs queries
+    #     several times if the request fails.
     #
+    # ncbi.nlm.nih.gov/nuccore/CP045701.2?report=gilist&format=text
+    # ~~~~~~~~~~~~~~~~                    ~~~~~~~~~~~~~~~~~~~~~~~~~
+    #                 ~~~~~~~~~~~~~~~~~~~
+    # ^ server        ^ server_path       ^ args (urlencoded)
+    # 
     # :param server: server address;
-    # :param url: the rest of url;
-    # :param request_for: a comment for an error message, if applicable;
-    # :param accession_number: NCBI accession number being requested, if applicable;
+    # :param server_path: path within the server;
+    # :param args: get argument dictionary;
+    # :param request_for: a comment for an error message, if applicable.
+    #        It's for making potential error messages more informative;
+    # :param accession_number: NCBI accession number being requested, if applicable.
+    #        It's for making potential error messages more informative;
     # :param timeout: timeout;
+    # :param max_attempts: max number of query attempts to perform;
 
-    # We can get spurious 404 or sth due to instability of NCBI servers work.
-    # Let's give it 3 attempts (with some sleep time in between),
-    #   and if all them are unsuccessful -- raise an error.
     error = True
-    sleep_time = 30
-    attempt_i, max_attempts = 0, 3
+    sleep_time = 30 # s
+    attempt_i = 0
+
+    path_and_args = server_path
+    if len(args) > 0:
+        path_and_args = '{}?{}'.format(
+            path_and_args,
+            urllib.parse.urlencode(args)
+        )
+    # end if
 
     while error:
 
@@ -50,7 +67,7 @@ def insistent_https_get(server : str,
 
         try:
             conn = http.client.HTTPSConnection(server, timeout=timeout)
-            conn.request('GET', url)
+            conn.request('GET', path_and_args)
             response = conn.getresponse()
             if response.code != 200:
                 raise RequestFailError
