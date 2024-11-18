@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 def insistent_https_get(server : str,
                         server_path : str,
-                        args : dict[str : str] = dict(),
+                        args : dict = dict(),
                         request_for : str = None,
                         accession_number : str = None,
                         timeout : int = 30,
