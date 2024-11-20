@@ -1,8 +1,8 @@
 
 from typing import TextIO
 
-from src.Containers.Fastq import Fastq
-from src.WriterSystem.FileWriter import FileWriter
+from src.containers.Fastq import Fastq
+from src.writer_system.FileWriter import FileWriter
 
 
 class FastqWriter(FileWriter):

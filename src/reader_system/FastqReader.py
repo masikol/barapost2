@@ -1,6 +1,6 @@
 
-from src.ReaderSystem.FileReader import FileReader
-from src.Containers.Fastq import Fastq
+from src.reader_system.FileReader import FileReader
+from src.containers.Fastq import Fastq
 
 
 class FastqReader(FileReader):

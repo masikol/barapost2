@@ -2,7 +2,7 @@
 import json
 from xml.etree import ElementTree
 
-from src.Containers.SeqTaxonomy import SeqTaxonomy
+from src.containers.SeqTaxonomy import SeqTaxonomy
 from src.network.insistent_https_get import insistent_https_get
 from src.taxonomy.taxonomy_config import RANKS_SORTED_DESCENDING
 

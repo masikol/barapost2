@@ -1,13 +1,13 @@
 
 import logging
 
-from src.WriterSystem.FileWriter  import FileWriter
-from src.WriterSystem.FastaWriter import FastaWriter
-from src.WriterSystem.FastqWriter import FastqWriter
-from src.WriterSystem.Pod5Writer  import Pod5Writer
-from src.WriterSystem.Fast5Writer import Fast5Writer
-from src.WriterSystem.Blow5Writer import Blow5Writer
-from src.WriterSystem.Slow5Writer import Slow5Writer
+from src.writer_system.FileWriter  import FileWriter
+from src.writer_system.FastaWriter import FastaWriter
+from src.writer_system.FastqWriter import FastqWriter
+from src.writer_system.Pod5Writer  import Pod5Writer
+from src.writer_system.Fast5Writer import Fast5Writer
+from src.writer_system.Blow5Writer import Blow5Writer
+from src.writer_system.Slow5Writer import Slow5Writer
 
 # TODO: don't forget to move higher to some config abstraction level
 logging.basicConfig(level = logging.INFO)

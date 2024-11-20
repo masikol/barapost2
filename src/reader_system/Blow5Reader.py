@@ -1,8 +1,8 @@
 
 from pyslow5 import Open
 
-from src.ReaderSystem.FileReader import FileReader
-from src.Containers.Blow5 import Blow5
+from src.reader_system.FileReader import FileReader
+from src.containers.Blow5 import Blow5
 
 
 class Blow5Reader(FileReader):

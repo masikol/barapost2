@@ -1,8 +1,8 @@
 
 from typing import TextIO
 
-from src.Containers.Fasta import Fasta
-from src.WriterSystem.FileWriter import FileWriter
+from src.containers.Fasta import Fasta
+from src.writer_system.FileWriter import FileWriter
 
 
 class FastaWriter(FileWriter):

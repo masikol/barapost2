@@ -1,8 +1,7 @@
 
-from src.Containers.SeqRecord import SeqRecord
+from src.containers.SeqRecord import SeqRecord
 
-
-class Blow5(SeqRecord):
+class Slow5(SeqRecord):
 
     __slots__ = ('record')
 
@@ -15,7 +14,8 @@ class Blow5(SeqRecord):
     # end def
 
     def __repr__(self):
-        return f'Blow5(record={self.record!r})'
+        return f'''Slow5(
+    record={self.record!r}
+)'''
     # end def
 # end class
-

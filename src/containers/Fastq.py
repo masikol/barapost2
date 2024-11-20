@@ -3,7 +3,7 @@ import math
 import logging
 import statistics
 
-from src.Containers.SeqRecord import SeqRecord
+from src.containers.SeqRecord import SeqRecord
 
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)

@@ -1,12 +1,14 @@
 
-from src.Containers.SeqRecord import SeqRecord
+from src.containers.SeqRecord import SeqRecord
+from pod5 import ReadRecord
 
-class Slow5(SeqRecord):
+
+class Pod5(SeqRecord):
 
     __slots__ = ('record')
 
-    def __init__(self, record : dict):
-        self.record = record.copy()
+    def __init__(self, record : ReadRecord):
+        self.record = record
     # end def
 
     def __str__(self):
@@ -14,7 +16,7 @@ class Slow5(SeqRecord):
     # end def
 
     def __repr__(self):
-        return f'''Slow5(
+        return f'''Pod5(
     record={self.record!r}
 )'''
     # end def

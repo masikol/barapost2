@@ -1,7 +1,7 @@
 
 from h5py import File
 
-from src.Containers.SeqRecord import SeqRecord
+from src.containers.SeqRecord import SeqRecord
 
 
 class Fast5(SeqRecord):

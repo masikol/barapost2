@@ -4,9 +4,9 @@ import gzip
 from typing import TextIO, MutableSequence
 from abc import ABC, abstractmethod
 
-from src.Config.config import OUTPUT_DIR
+from src.config.config import OUTPUT_DIR
 
-from src.Containers.ClassifContainer import ClassifContainer
+from src.containers.ClassifContainer import ClassifContainer
 
 OUT_FILE_HANDLE_IDX = 0
 # CURR_INDEX_IDX      = 1 # not used for now but we leave it here

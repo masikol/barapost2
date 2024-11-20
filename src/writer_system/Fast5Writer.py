@@ -5,9 +5,9 @@ import logging
 
 from h5py import File
 
-from src.Config.config import OUTPUT_DIR
-from src.Containers.Fast5 import Fast5
-from src.WriterSystem.FileWriter import FileWriter
+from src.config.config import OUTPUT_DIR
+from src.containers.Fast5 import Fast5
+from src.writer_system.FileWriter import FileWriter
 
 
 class Fast5Writer(FileWriter):

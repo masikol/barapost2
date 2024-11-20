@@ -1,6 +1,6 @@
 
-from src.ReaderSystem.FileReader import FileReader
-from src.Containers.Fasta import Fasta
+from src.reader_system.FileReader import FileReader
+from src.containers.Fasta import Fasta
 
 
 class FastaReader(FileReader):

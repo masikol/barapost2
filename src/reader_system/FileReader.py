@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Generator, Callable, Sequence, MutableSequence
 
 import src.filesystem as fs
-from src.Containers.SeqRecord import SeqRecord
+from src.containers.SeqRecord import SeqRecord
 
 
 class FileReader(ABC):

@@ -2,11 +2,11 @@
 import os
 from pyslow5 import Open
 
-from src.Config.config import OUTPUT_DIR
+from src.config.config import OUTPUT_DIR
 
-from src.Containers.Blow5 import Blow5
+from src.containers.Blow5 import Blow5
 
-from src.WriterSystem.FileWriter import FileWriter
+from src.writer_system.FileWriter import FileWriter
 
 
 class Blow5Writer(FileWriter):

@@ -3,11 +3,11 @@ import os
 
 from pod5 import Writer
 
-from src.Config.config import OUTPUT_DIR
+from src.config.config import OUTPUT_DIR
 
-from src.WriterSystem.FileWriter import FileWriter
+from src.writer_system.FileWriter import FileWriter
 
-from src.Containers.Pod5 import Pod5
+from src.containers.Pod5 import Pod5
 
 # TODO: if this labled file do exist throw "Input path already exists. Refusing to overwrite:"
 

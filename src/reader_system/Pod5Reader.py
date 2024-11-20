@@ -1,8 +1,8 @@
 
 from pod5 import DatasetReader
 
-from src.ReaderSystem.FileReader import FileReader
-from src.Containers.Pod5 import Pod5
+from src.reader_system.FileReader import FileReader
+from src.containers.Pod5 import Pod5
 
 
 class Pod5Reader(FileReader):

@@ -1,8 +1,8 @@
 
 from pyslow5 import Open
 
-from src.ReaderSystem.FileReader import FileReader
-from src.Containers.Slow5 import Slow5
+from src.reader_system.FileReader import FileReader
+from src.containers.Slow5 import Slow5
 
 
 class Slow5Reader(FileReader):

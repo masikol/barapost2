@@ -4,15 +4,15 @@ import logging
 from typing import Generator, Sequence, MutableSequence
 
 import src.filesystem as fs
-from src.Containers.SeqRecord import SeqRecord
+from src.containers.SeqRecord import SeqRecord
 
-from src.ReaderSystem.FileReader  import FileReader
-from src.ReaderSystem.FastaReader import FastaReader
-from src.ReaderSystem.FastqReader import FastqReader
-from src.ReaderSystem.Fast5Reader import Fast5Reader
-from src.ReaderSystem.Pod5Reader  import Pod5Reader
-from src.ReaderSystem.Slow5Reader import Slow5Reader
-from src.ReaderSystem.Blow5Reader import Blow5Reader
+from src.reader_system.FileReader  import FileReader
+from src.reader_system.FastaReader import FastaReader
+from src.reader_system.FastqReader import FastqReader
+from src.reader_system.Fast5Reader import Fast5Reader
+from src.reader_system.Pod5Reader  import Pod5Reader
+from src.reader_system.Slow5Reader import Slow5Reader
+from src.reader_system.Blow5Reader import Blow5Reader
 
 
 # TODO: don't forget to move higher to some config abstraction level
