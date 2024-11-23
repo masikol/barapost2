@@ -6,6 +6,7 @@ import http.client
 import urllib.parse
 
 from src.network.RequestFailError import RequestFailError
+from src.config.network_config import MAX_ATTEMPT_COUNT, DEFAULT_TIMEOUT
 
 
 # TODO: don't forget to move higher to some config abstraction level
@@ -27,9 +28,7 @@ def insistent_https_get(server : str,
                         server_path : str,
                         args : dict = dict(),
                         request_for : str = None,
-                        accession_number : str = None,
-                        timeout : int = 30,
-                        max_attempts: int = 3) -> str:
+                        accession_number : str = None) -> str:
     # Function performs an 'insistent' HTTPS request.
     # It means that the function performs queries
     #     several times if the request fails.
@@ -46,8 +45,6 @@ def insistent_https_get(server : str,
     #        It's for making potential error messages more informative;
     # :param accession_number: NCBI accession number being requested, if applicable.
     #        It's for making potential error messages more informative;
-    # :param timeout: timeout;
-    # :param max_attempts: max number of query attempts to perform;
 
     error = True
     sleep_time = 30 # s
@@ -66,7 +63,7 @@ def insistent_https_get(server : str,
         response = None
 
         try:
-            conn = http.client.HTTPSConnection(server, timeout=timeout)
+            conn = http.client.HTTPSConnection(server, timeout=DEFAULT_TIMEOUT)
             conn.request('GET', path_and_args)
             response = conn.getresponse()
             if response.code != 200:
@@ -94,9 +91,9 @@ def insistent_https_get(server : str,
             if 'ncbi.nlm.nih.gov' in server:
                 logging_str += 'It may be due to instable work of NCBI servers. '
             # end if
-            if attempt_i < max_attempts:
+            if attempt_i < MAX_ATTEMPT_COUNT:
                 logging_str += '{} attempts to connect left, waiting for {} sec... ' \
-                    .format(max_attempts - attempt_i, sleep_time)
+                    .format(MAX_ATTEMPT_COUNT - attempt_i, sleep_time)
                 logging.warning(logging_str)
                 attempt_i += 1
                 time.sleep(sleep_time)

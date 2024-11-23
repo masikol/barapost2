@@ -2,8 +2,8 @@
 from h5py import File
 
 from src.containers.Fast5 import Fast5
-from src.simplify_read_id import simplify_read_id
 from src.reader_system.FileReader import FileReader
+from src.util.simplify_read_id import simplify_read_id
 
 
 class Fast5Reader(FileReader):

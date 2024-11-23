@@ -6,8 +6,8 @@ from xml.etree.ElementTree import ParseError as XMLParseError
 
 from src.containers.SeqTaxonomy import SeqTaxonomy
 from src.taxonomy.Errors import TaxonomyParseError
+from src.config.taxonomy_config import RANKS_SORTED_DESCENDING
 from src.network.insistent_https_get import insistent_https_get
-from src.taxonomy.taxonomy_config import RANKS_SORTED_DESCENDING
 
 
 # TODO: don't forget to move higher to some config abstraction level
