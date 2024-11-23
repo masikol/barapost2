@@ -86,7 +86,6 @@ class TaxonomySearcher:
         #   https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&id=930166&retmode=xml
         # TODO: handle xml parsing errors
         root = ElementTree.fromstring(esummary_response)
-        tax_id = root.findall('./Taxon/TaxId')[0].text.strip()
         tax_name = root.findall('./Taxon/ScientificName')[0].text.strip()
         requested_taxon_rank = root.findall('./Taxon/Rank')[0].text.strip()
 
@@ -109,7 +108,6 @@ class TaxonomySearcher:
         seq_taxonomy = SeqTaxonomy(
             seq_id=accession_number,
             rank=requested_taxon_rank.capitalize(),
-            tax_id=tax_id,
             tax_name=tax_name,
             Domain=tax_dict['superkingdom'],
             Phylum=tax_dict['phylum'],

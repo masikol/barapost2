@@ -18,6 +18,11 @@ FASTQ_EXTENSIONS = {
     'fq'
 }
 
+# Characters not allowes in filenames
+_BAD_CHARS = ("/", "\\", ":", "*", "+", "'",
+              "?", "\"", "<", ">", "(", ")",
+              "[",  "]", "|", ";", "{", "}",)
+
 
 def is_fasta(file_path : str) -> bool:
     if is_gzipped(file_path):
@@ -78,4 +83,21 @@ def is_blow5(file_path : str) -> bool:
 def is_slow5(file_path : str) -> bool:
     extension = get_file_extension(file_path)
     return extension.lower() == 'slow5'
+# end def
+
+
+def remove_bad_chars(string : str) -> str:
+    # :param string: string to edit;
+    # :type string: str;
+
+    # Replace spaces and non-breaking spaces with underscores.
+    string = string.replace(' ', '_')
+    string = string.replace('\u00A0', '_')
+
+    # Remove all other "bad chars"
+    for char in _BAD_CHARS:
+        string = string.replace(char, '')
+    # end for
+
+    return string
 # end def

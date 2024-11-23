@@ -38,7 +38,6 @@ class TestTaxonomySearcher:
         seq_taxonomy = tax_searcher.seach_taxonomy(accession_number_1)
         assert seq_taxonomy.seq_id   == accession_number_1
         assert seq_taxonomy.rank     == 'Species'
-        assert seq_taxonomy.tax_id   == '930166'
         assert seq_taxonomy.tax_name == 'Pseudomonas brassicacearum'
         assert seq_taxonomy.Domain   == 'Bacteria'
         assert seq_taxonomy.Phylum   == 'Pseudomonadota'
@@ -54,7 +53,6 @@ class TestTaxonomySearcher:
         seq_taxonomy = tax_searcher.seach_taxonomy(accession_number_2)
         assert seq_taxonomy.seq_id   == accession_number_2
         assert seq_taxonomy.rank     == 'Species'
-        assert seq_taxonomy.tax_id   == '930166'
         assert seq_taxonomy.tax_name == 'Pseudomonas brassicacearum'
         assert seq_taxonomy.Domain   == 'Bacteria'
         assert seq_taxonomy.Phylum   == 'Pseudomonadota'
@@ -70,7 +68,6 @@ class TestTaxonomySearcher:
         seq_taxonomy = tax_searcher.seach_taxonomy(accession_number_3)
         assert seq_taxonomy.seq_id   == accession_number_3
         assert seq_taxonomy.rank     == 'Genus'
-        assert seq_taxonomy.tax_id   == '286'
         assert seq_taxonomy.tax_name == 'Pseudomonas'
         assert seq_taxonomy.Domain   == 'Bacteria'
         assert seq_taxonomy.Phylum   == 'Pseudomonadota'
@@ -86,7 +83,6 @@ class TestTaxonomySearcher:
         seq_taxonomy = tax_searcher.seach_taxonomy(accession_number_4)
         assert seq_taxonomy.seq_id   == accession_number_4
         assert seq_taxonomy.rank     == 'Domain'
-        assert seq_taxonomy.tax_id   == '2'
         assert seq_taxonomy.tax_name == 'Bacteria'
         assert seq_taxonomy.Domain   == 'Bacteria'
         assert seq_taxonomy.Phylum   == None
