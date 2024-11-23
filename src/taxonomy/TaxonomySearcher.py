@@ -1,10 +1,18 @@
 
 import json
+import logging
 from xml.etree import ElementTree
+from xml.etree.ElementTree import ParseError as XMLParseError
 
 from src.containers.SeqTaxonomy import SeqTaxonomy
+from src.taxonomy.Errors import TaxonomyParseError
 from src.network.insistent_https_get import insistent_https_get
 from src.taxonomy.taxonomy_config import RANKS_SORTED_DESCENDING
+
+
+# TODO: don't forget to move higher to some config abstraction level
+logging.basicConfig(level = logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class TaxonomySearcher:
@@ -17,6 +25,12 @@ class TaxonomySearcher:
 
 
     def _acc2tax_id(self, accession_number : str) -> int:
+        elink_response = self._make_elink_request(accession_number)
+        tax_id = self._try_parse_taxid(elink_response)
+        return tax_id
+    # end def
+
+    def _make_elink_request(self, accession_number : str) -> str:
         elink_response = insistent_https_get(
             server='eutils.ncbi.nlm.nih.gov',
             server_path='/entrez/eutils/elink.fcgi',
@@ -29,7 +43,21 @@ class TaxonomySearcher:
             request_for='Elink page to taxonomy db from nucore using an accession number',
             accession_number=accession_number
         )
-        tax_id = self._parse_taxid(elink_response)
+        return elink_response
+    # end def
+
+    def _try_parse_taxid(self, elink_response : str) -> int:
+        try:
+            tax_id = self._parse_taxid(elink_response)
+        except (json.JSONDecodeError,
+                KeyError,
+                IndexError,
+                StopIteration) as err:
+            logging_str = 'Error: cannot parse taxonomy ID for sequence `{}`: {}' \
+                .format(accession_number, err)
+            logging.error(logging_str)
+            raise TaxonomyParseError
+        # end try
         return tax_id
     # end def
 
@@ -53,11 +81,8 @@ class TaxonomySearcher:
         #     }
         # ]
         # }
-        # TODO: catch whatever json.loads raises
         response_dict = json.loads(elink_response)
-        # TODO: catch KeyError, out of bounds error
         tax_ids = response_dict['linksets'][0]['linksetdbs'][0]['links']
-        # TODO: if len(tax_ids) == 0
         return next(iter(tax_ids))
     # end def
 
@@ -65,6 +90,12 @@ class TaxonomySearcher:
     def _tax_id2taxonomy(self,
                          tax_id : str,
                          accession_number : str) -> SeqTaxonomy:
+        esummary_response = self._make_esummary_request(tax_id)
+        taxonomy = self._try_parse_taxonomy(esummary_response, accession_number)
+        return taxonomy
+    # end def
+
+    def _make_esummary_request(self, tax_id : int) -> str:
         esummary_response = insistent_https_get(
             server='eutils.ncbi.nlm.nih.gov',
             server_path='/entrez/eutils/efetch.fcgi',
@@ -75,7 +106,21 @@ class TaxonomySearcher:
             },
             request_for='Esummary page of the taxonomy db for taxid `{}`'.format(tax_id),
         )
-        taxonomy = self._parse_taxonomy(esummary_response, accession_number)
+        return esummary_response
+    # end def
+
+    def _try_parse_taxonomy(self,
+                            esummary_response : str,
+                            accession_number : str) -> SeqTaxonomy:
+        try:
+            taxonomy = self._parse_taxonomy(esummary_response, accession_number)
+        except (IndexError,
+                XMLParseError) as err:
+            logging_str = 'Error: cannot parse taxonomy for sequence `{}`: {}' \
+                .format(accession_number, err)
+            logging.error(logging_str)
+            raise TaxonomyParseError
+        # end try
         return taxonomy
     # end def
 
@@ -84,7 +129,6 @@ class TaxonomySearcher:
                         accession_number : str) -> SeqTaxonomy:
         # Example of a response XML:
         #   https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&id=930166&retmode=xml
-        # TODO: handle xml parsing errors
         root = ElementTree.fromstring(esummary_response)
         tax_name = root.findall('./Taxon/ScientificName')[0].text.strip()
         requested_taxon_rank = root.findall('./Taxon/Rank')[0].text.strip()
