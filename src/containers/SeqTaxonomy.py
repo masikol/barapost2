@@ -1,9 +1,11 @@
 
+from typing import Sequence
 from functools import reduce
 
 from src.taxonomy.taxonomy_config import TAXONOMY_SEP, \
+                                         OWN_SEQ_TAX_SEP, \
                                          TAXONOMY_COLNAMES, \
-                                         OWN_SEQ_TAX_SEP
+                                         RANKS_SORTED_DESCENDING
 
 
 class SeqTaxonomy:
@@ -70,10 +72,16 @@ class SeqTaxonomy:
                 split_row
             )
         )
+
+        rank, tax_name = cls._infer_own_seq_rank_and_tax_name(split_row)
+        if tax_name is None:
+            tax_name = seq_id
+        # end if
+
         return SeqTaxonomy(
             seq_id=seq_id,
-            rank=None, # TODO: infer rank somehow
-            tax_name=seq_id, # TODO: of infer it from own_seq_tax_str?
+            rank=rank,
+            tax_name=tax_name,
             Domain=split_row[0],
             Phylum=split_row[1],
             Class=split_row[2],
@@ -82,6 +90,22 @@ class SeqTaxonomy:
             Genus=split_row[5],
             Species=split_row[6],
         )
+    # end def
+
+    @classmethod
+    def _infer_own_seq_rank_and_tax_name(cls, split_row : Sequence[str]) -> str:
+        own_seq_names = (
+            split_row[6], split_row[5], split_row[4],
+            split_row[3], split_row[2], split_row[1],
+            split_row[0],
+        )
+        ranks = reversed(RANKS_SORTED_DESCENDING)
+        for rank, tax_name in zip(ranks, own_seq_names):
+            if not tax_name is None:
+                return rank, tax_name
+            # end if
+        # end def
+        return None, None
     # end def
 
     @classmethod

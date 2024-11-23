@@ -69,8 +69,8 @@ class TestTaxonomyManager:
         # end with
         expected = SeqTaxonomy(
             seq_id=accession_number_1,
-            rank=None, # TODO: infer rank somehow
-            tax_name=accession_number_1,  # TODO: infer rank somehow
+            rank='Species',
+            tax_name='Pseudomonas_brassicacearum',
             Domain='Bacteria',
             Phylum='Pseudomonadota',
             Class='Gammaproteobacteria',
@@ -131,5 +131,4 @@ class TestTaxonomyManager:
         # end def
         return first_data_line
     # end def
-
 # end def
