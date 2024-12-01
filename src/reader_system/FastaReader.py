@@ -10,12 +10,12 @@ class FastaReader(FileReader):
     # end def
 
     def _read_single_record(self) -> Fasta:
-        header = self.reader.readline().strip('\r\n')
+        header = self.reader.readline().strip()
         seq_lines = []
 
         while True:
             pos = self.reader.tell()
-            line = self.reader.readline().strip('\r\n')
+            line = self.reader.readline().strip()
             if line == '':
                 break
             # end if
@@ -27,6 +27,9 @@ class FastaReader(FileReader):
         # end while
 
         seq = ''.join(seq_lines)
-        return Fasta(header = header, seq = seq)
+        return Fasta(
+            header=header.lstrip('>'),
+            seq=seq
+        )
     # end def
 # end class

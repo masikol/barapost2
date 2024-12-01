@@ -10,10 +10,10 @@ class FastqReader(FileReader):
     # end def
 
     def _read_single_record(self) -> Fastq:
-        header    = self.reader.readline().strip('\r\n')
-        seq       = self.reader.readline().strip('\r\n')
-        plus_line = self.reader.readline().strip('\r\n')
-        quality   = self.reader.readline().strip('\r\n')
+        header    = self.reader.readline().strip().lstrip('@')
+        seq       = self.reader.readline().strip()
+        plus_line = self.reader.readline().strip()
+        quality   = self.reader.readline().strip()
 
         return Fastq(
             header=header,

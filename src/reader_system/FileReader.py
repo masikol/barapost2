@@ -1,4 +1,5 @@
 
+import os
 import gzip
 from io import TextIOWrapper
 from abc import ABC, abstractmethod
@@ -15,22 +16,25 @@ class FileReader(ABC):
                  packet_size : int = 1,
                  probing_batch_size : int = -1,
                  mode : str = 'seq_count',
-                 max_seq_len : int = -1):
+                 max_seq_len : int = -1,
+                 n_first_skip_dict : dict = dict()):
 
         self.file_paths = file_paths
         # TODO: catch StopIteration
         # Or we will handle this at the arg parsing stage?
-        self.curr_file_path = next(iter(file_paths))
-        self.curr_file_i = 0
+        self._curr_file_path = next(iter(file_paths))
+        self._curr_file_i = 0
 
         self.packet_size = packet_size
         self.probing_batch_size = probing_batch_size
         self.mode = mode
         self.max_seq_len = max_seq_len
+        self.n_first_skip_dict = n_first_skip_dict # in_file_basename : n_records_to_skip
 
         self._packet = []
         self._sum_seq_len_read = 0
         self._n_records_read_total = 0
+        self._end_of_curr_file = False
 
         if self.mode == 'seq_count':
             self._make_packet = self._make_seq_count_packet
@@ -69,21 +73,18 @@ class FileReader(ABC):
                                  condition : Callable) -> MutableSequence[SeqRecord]:
 
         while condition():
-            try:
-                record = self._read_single_record()
-            except StopIteration:
-                self._switch_to_next_input_file()
-                record = self._read_single_record()
-            # end try
+            record = self._read_single_record()
 
             if self._check_file_end(record):
-                if len(self._packet) != 0:
+                self._end_of_curr_file = True
+                if len(self._packet) == 0:
+                    self._reset_packet()
+                    return self._packet
+                else:
                     packet = self._packet
                     self._reset_packet()
                     return packet
                 # end if
-                self._switch_to_next_input_file()
-                record = self._read_single_record()
             # end if
             self._packet.append(record)
 
@@ -98,17 +99,6 @@ class FileReader(ABC):
         self._reset_packet()
 
         return packet
-    # end def
-
-    def _switch_to_next_input_file(self):
-        # TODO: this won't work if self.file_paths is a generator
-        #   It won't be a generator, anyway, so let it be so
-        self.curr_file_i += 1
-        if self.curr_file_i >= len(self.file_paths):
-            raise StopIteration
-        # end if
-        self.curr_file_path = self.file_paths[self.curr_file_i]
-        self.reader = self._open_gzipwise(self.curr_file_path)
     # end def
 
     def _reset_packet(self):
@@ -157,11 +147,29 @@ class FileReader(ABC):
             raise StopIteration
         # end if
 
+        if self._end_of_curr_file:
+            self._switch_to_next_input_file()
+            self._end_of_curr_file = False
+        # end if
+
         return self._make_packet()
     # end def
 
+    def _switch_to_next_input_file(self):
+        # TODO: this won't work if self.file_paths is a generator
+        #   It won't be a generator, anyway, so let it be so
+        self._curr_file_i += 1
+        if self._curr_file_i >= len(self.file_paths):
+            raise StopIteration
+        # end if
+        self._curr_file_path = self.file_paths[self._curr_file_i]
+        self.reader = self._open_gzipwise(self._curr_file_path)
+        self._skip_n_first_records()
+    # end def
+
     def open(self) -> None:
-        self.reader = self._open_gzipwise(self.curr_file_path)
+        self.reader = self._open_gzipwise(self._curr_file_path)
+        self._skip_n_first_records()
     # end def
 
     def _open_gzipwise(self, infile_path : str) -> TextIOWrapper:
@@ -170,6 +178,24 @@ class FileReader(ABC):
         else:
             return open(infile_path, mode='rt')
         # end if
+    # end def
+
+    def _skip_n_first_records(self):
+        n_records_to_skip = self._get_n_records_to_skip()
+        if n_records_to_skip > 0:
+            for i in range(n_records_to_skip):
+                self._read_single_record()
+            # end for
+        # end if
+    # end def
+
+    def _get_n_records_to_skip(self) -> int:
+        in_file_basename = os.path.basename(self._curr_file_path)
+        if not in_file_basename in self.n_first_skip_dict:
+            return 0
+        # end if
+        # TODO: catch ValueError: conversion to int
+        return self.n_first_skip_dict[in_file_basename]
     # end def
 
     def close(self) -> None:

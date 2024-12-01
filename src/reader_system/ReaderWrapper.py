@@ -27,7 +27,8 @@ class ReaderWrapper(object):
                  packet_size : int = 1,
                  probing_batch_size : int = -1,
                  mode : str = 'seq_count',
-                 max_seq_len : int = -1):
+                 max_seq_len : int = -1,
+                 n_first_skip_dict : dict = dict()):
         
         # TODO: we'll handle this at the arg parsing stage
         # if not os.path.isfile(file_path):
@@ -36,6 +37,8 @@ class ReaderWrapper(object):
         #     )
         # # end if
 
+        # TODO: do we really need to assign these vars to self. fields?
+        # They are used in the __init__ only
         self.file_paths         = file_paths
         self.packet_size        = packet_size
         self.probing_batch_size = probing_batch_size
@@ -78,7 +81,8 @@ class ReaderWrapper(object):
                 packet_size=self.packet_size,
                 probing_batch_size=self.probing_batch_size,
                 mode=self.mode,
-                max_seq_len=self.max_seq_len
+                max_seq_len=self.max_seq_len,
+                n_first_skip_dict=n_first_skip_dict
             )
         elif fs.is_fastq(curr_file_path):
             self.reader = FastqReader(
@@ -86,23 +90,28 @@ class ReaderWrapper(object):
                 packet_size=self.packet_size,
                 probing_batch_size=self.probing_batch_size,
                 mode=self.mode,
-                max_seq_len=self.max_seq_len
+                max_seq_len=self.max_seq_len,
+                n_first_skip_dict=n_first_skip_dict
             )
         elif fs.is_fast5(curr_file_path):
             self.reader = Fast5Reader(
-                file_paths=self.file_paths
+                file_paths=self.file_paths,
+                n_first_skip_dict=n_first_skip_dict
             )
         elif fs.is_pod5(curr_file_path):
             self.reader = Pod5Reader(
-                file_paths=self.file_paths
+                file_paths=self.file_paths,
+                n_first_skip_dict=n_first_skip_dict
             )
         elif fs.is_blow5(curr_file_path):
             self.reader = Blow5Reader(
-                file_paths=self.file_paths
+                file_paths=self.file_paths,
+                n_first_skip_dict=n_first_skip_dict
             )
         elif fs.is_slow5(curr_file_path):
             self.reader = Slow5Reader(
-                file_paths=self.file_paths
+                file_paths=self.file_paths,
+                n_first_skip_dict=n_first_skip_dict
             )
         else:
             err_msg = self._make_invalid_file_type_err_msg(curr_file_path)
