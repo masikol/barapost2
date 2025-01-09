@@ -4,10 +4,10 @@ import logging
 from xml.etree import ElementTree
 from xml.etree.ElementTree import ParseError as XMLParseError
 
-from src.containers.SeqTaxonomy import SeqTaxonomy
 from src.taxonomy.Errors import TaxonomyParseError
+from src.containers.SeqTaxonomy import SeqTaxonomy
+from src.network.insistent_https import insistent_https
 from src.config.taxonomy_config import RANKS_SORTED_DESCENDING
-from src.network.insistent_https_get import insistent_https_get
 
 
 # TODO: don't forget to move higher to some config abstraction level
@@ -26,12 +26,12 @@ class TaxonomySearcher:
 
     def _acc2tax_id(self, accession_number : str) -> int:
         elink_response = self._make_elink_request(accession_number)
-        tax_id = self._try_parse_taxid(elink_response)
+        tax_id = self._try_parse_taxid(elink_response, accession_number)
         return tax_id
     # end def
 
     def _make_elink_request(self, accession_number : str) -> str:
-        elink_response = insistent_https_get(
+        elink_response = insistent_https(
             server='eutils.ncbi.nlm.nih.gov',
             server_path='/entrez/eutils/elink.fcgi',
             args= {
@@ -46,7 +46,9 @@ class TaxonomySearcher:
         return elink_response
     # end def
 
-    def _try_parse_taxid(self, elink_response : str) -> int:
+    def _try_parse_taxid(self,
+                         elink_response : str,
+                         accession_number : str) -> int:
         try:
             tax_id = self._parse_taxid(elink_response)
         except (json.JSONDecodeError,
@@ -96,7 +98,7 @@ class TaxonomySearcher:
     # end def
 
     def _make_esummary_request(self, tax_id : int) -> str:
-        esummary_response = insistent_https_get(
+        esummary_response = insistent_https(
             server='eutils.ncbi.nlm.nih.gov',
             server_path='/entrez/eutils/efetch.fcgi',
             args= {

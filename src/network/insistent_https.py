@@ -24,11 +24,13 @@ logger = logging.getLogger(__name__)
 # # end try
 
 
-def insistent_https_get(server : str,
-                        server_path : str,
-                        args : dict = dict(),
-                        request_for : str = None,
-                        accession_number : str = None) -> str:
+def insistent_https(server : str,
+                    server_path : str,
+                    args : dict = None,
+                    method : str = 'GET',
+                    headers : dict = dict(),
+                    request_for : str = None,
+                    accession_number : str = None) -> str:
     # Function performs an 'insistent' HTTPS request.
     # It means that the function performs queries
     #     several times if the request fails.
@@ -50,21 +52,36 @@ def insistent_https_get(server : str,
     sleep_time = 30 # s
     attempt_i = 0
 
-    path_and_args = server_path
-    if len(args) > 0:
-        path_and_args = '{}?{}'.format(
-            path_and_args,
-            urllib.parse.urlencode(args)
-        )
-    # end if
-
     while error:
 
         response = None
 
         try:
             conn = http.client.HTTPSConnection(server, timeout=DEFAULT_TIMEOUT)
-            conn.request('GET', path_and_args)
+            if method == 'GET':
+                path_and_args = server_path
+                if not args is None:
+                    path_and_args = '{}?{}'.format(
+                        path_and_args,
+                        urllib.parse.urlencode(args)
+                    )
+                # end if
+                conn.request(
+                    method=method,
+                    url=path_and_args,
+                    headers=headers
+                )
+            elif method == 'POST':
+                body = None if args is None else urllib.parse.urlencode(args)
+                conn.request(
+                    method=method,
+                    url=server_path,
+                    body=body,
+                    headers=headers
+                )
+            else:
+                raise ValueError('Method not supported: `{}`'.format(method))
+            # end def
             response = conn.getresponse()
             if response.code != 200:
                 raise RequestFailError

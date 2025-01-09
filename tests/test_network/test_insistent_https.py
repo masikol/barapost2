@@ -1,8 +1,8 @@
 
 import pytest
 
+from src.network.insistent_https import insistent_https
 from src.network.RequestFailError import RequestFailError
-from src.network.insistent_https_get import insistent_https_get
 
 
 # === Fixtures ===
@@ -45,35 +45,35 @@ def incorrect_params2() -> dict:
 # === Test classes ===
 
 class TestInsistentHttpsGet:
-    # Class for testing `src.network.insistent_https_get`
+    # Class for testing `src.network.insistent_https`
 
     def test_correct_params(self, correct_params: dict):
         try:
-            insistent_https_get(
+            insistent_https(
                 server=correct_params['server'],
                 server_path=correct_params['server_path'],
             )
         except RequestFailError as err:
-            err_msg = '`insistent_https_get` raised an exception {}'.format(err)
+            err_msg = '`insistent_https` raised an exception {}'.format(err)
             assert False, err_msg
     # end def
 
     def test_correct_params_with_args(self, correct_params_with_args: dict):
         try:
-            insistent_https_get(
+            insistent_https(
                 server=correct_params_with_args['server'],
                 server_path=correct_params_with_args['server_path'],
                 args=correct_params_with_args['args'],
             )
         except RequestFailError as err:
-            err_msg = '`insistent_https_get` raised an exception {}'.format(err)
+            err_msg = '`insistent_https` raised an exception {}'.format(err)
             assert False, err_msg
     # end def
 
 
     def test_incorrect_params1(self, incorrect_params1: dict):
         with pytest.raises(RequestFailError):
-            insistent_https_get(
+            insistent_https(
                 server=incorrect_params1['server'],
                 server_path=incorrect_params1['server_path'],
             )
@@ -82,7 +82,7 @@ class TestInsistentHttpsGet:
 
     def test_incorrect_params2(self, incorrect_params2: dict):
         with pytest.raises(RequestFailError):
-            insistent_https_get(
+            insistent_https(
                 server=incorrect_params2['server'],
                 server_path=incorrect_params2['server_path'],
             )
