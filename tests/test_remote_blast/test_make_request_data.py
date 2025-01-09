@@ -5,7 +5,7 @@ from typing import Sequence
 import pytest
 
 from src.containers import Fasta
-from src.remote_blast import RemoteBlast
+from src.remote_blast.remote_blast import RemoteBlast
 from src.reader_system.ReaderWrapper import ReaderWrapper
 from src.config.remote_blast import AUTHOR_EMAIL, TOOL_NAME
 
@@ -92,7 +92,7 @@ class TestMakeRequestData:
             organisms=[],
             output_dirpath=TMP_OUTDIR
         )
-        request_data : dict = remote_blast._make_request_data(
+        request_data : dict = remote_blast._make_BLAST_PUT_request_data(
             packet=[query_seq_1, query_seq_2, query_seq_3,]
         )
 
@@ -133,7 +133,7 @@ class TestMakeRequestData:
             organisms=test_organisms,
             output_dirpath=TMP_OUTDIR
         )
-        request_data : dict = remote_blast._make_request_data(
+        request_data : dict = remote_blast._make_BLAST_PUT_request_data(
             packet=[query_seq_1, query_seq_2, query_seq_3,]
         )
 
