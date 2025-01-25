@@ -10,6 +10,7 @@ from typing import Sequence
 from src.time import humane_time
 import src.remote_blast.blast_errors as berr
 from src.containers.SeqRecord import SeqRecord
+from src.containers.AlignResult import AlignResult
 from src.network.insistent_https import insistent_https
 from src.config.remote_blast import PROGRAM, HITLIST_SIZE, DATABASE, \
                                     SERVER, SERVER_PATH, AUTHOR_EMAIL, TOOL_NAME
@@ -132,7 +133,9 @@ class RemoteBlast:
     # end def
 
 
-    def retrieve_results(self, request_id : str, wait_time : int) -> str:
+    def retrieve_results(self,
+                         request_id : str,
+                         wait_time : int) -> Sequence[AlignResult]:
         self._wait_till_job_is_ready(request_id, wait_time)
         blast_result = self._request_results(request_id)
         return blast_result
@@ -192,6 +195,7 @@ class RemoteBlast:
                 elif "ThereAreHits=no" in job_status_response:
                     # if there are no hits
                     logging.info('There are no hits. It happens.')
+                    raise berr.BlastError(berr.ACTION_NO_HITS)
                 else:
                     # Probably, job has failed if execution reaches here
                     logging.warning(
@@ -228,7 +232,6 @@ class RemoteBlast:
     # end def
 
     def _wait_estimated_time(self, wait_time : int):
-        # TODO: maintain the comment
         # wait_time can be zero at the very beginning of resumption
         if wait_time > 0:
             extra_seconds = 3
@@ -279,7 +282,7 @@ class RemoteBlast:
         return job_status
     # end def
 
-    def _request_results(self, request_id : str) -> dict:
+    def _request_results(self, request_id : str) -> Sequence[AlignResult]:
         logging.info('Retrieving results...')
         request_data = self._make_retrieve_request_data(request_id)
         blast_results_raw = insistent_https(
@@ -309,9 +312,10 @@ class RemoteBlast:
         }
     # end def
 
-    def _parse_blast_results(self, blast_results_raw : str) -> dict:
+    def _parse_blast_results(self,
+                             blast_results_raw : str) -> Sequence[AlignResult]:
         try:
-            return json.loads(blast_results_raw)
+            result_dict = json.loads(blast_results_raw)
         except (JSONDecodeError, UnicodeDecodeError) as err:
             error_fpath = self._make_problematic_results_fpath()
             logging.critical(
@@ -323,6 +327,7 @@ class RemoteBlast:
             # end with
             raise berr.BlastError(berr.ACTION_PANIC)
         # end try
+        return self._parse_alignments(result_dict)
     # end def
 
     def _make_problematic_results_fpath(self) -> str:
@@ -330,6 +335,83 @@ class RemoteBlast:
             self.output_dirpath,
             'problematic_raw_results.txt'
         )
+    # end def
+
+    def _parse_alignments(self, result_dict : dict) -> Sequence[AlignResult]:
+
+        packet_align_results = dict()
+
+        for output in result_dict['BlastOutput2']:
+            search_results = output['report']['results']['search']
+            query_id = search_results['query_title']
+            query_length = search_results['query_len']
+
+            query_align_results = list()
+
+            # TODO: print or save search_results['message'] if it is set??
+            hits = search_results['hits']
+            if len(hits) == 0:
+                query_align_results.append(
+                    AlignResult(
+                        query_id,
+                        hit_name=None,
+                        hit_accession=None,
+                        query_length=query_length,
+                        alignment_length=None,
+                        identity=None,
+                        gaps=None,
+                        evalue=None
+                    )
+                )
+            else:
+                first_hit = next(iter(hits))
+                max_bit_score = next(iter(first_hit['hsps']))['bit_score']
+                i = 0
+                next_bit_score = max_bit_score
+                while (next_bit_score - max_bit_score) < 1e-3:
+                    hit = hits[i]
+                    description = next(iter(hit['description']))
+                    hit_accession = description['accession']
+                    if 'sciname' in description:
+                        hit_name = description['sciname']
+                    else:
+                        hit_name = description['title']
+                    # end if
+                    taxid = description['taxid']
+
+                    hsp = next(iter(hit['hsps']))
+
+                    alignment_length = hsp['align_len']
+                    identity = hsp['identity'] / alignment_length * 100
+                    gaps = hsp['gaps']
+                    evalue = hsp['evalue']
+
+                    query_align_results.append(
+                        AlignResult(
+                            query_id=query_id,
+                            hit_name=hit_name,
+                            hit_accession=hit_accession,
+                            query_length=query_length,
+                            alignment_length=alignment_length,
+                            identity=identity,
+                            gaps=gaps,
+                            evalue=evalue
+                        )
+                    )
+
+                    i += 1
+                    if i >= len(hits):
+                        break
+                    # end if
+                    next_hit = hits[i]
+                    next_bit_score = next(iter(next_hit['hsps']))['bit_score']
+                # end while
+            # end if
+            
+            packet_align_results[query_id] = query_align_results
+        # end for
+
+        return packet_align_results
     # end def
 
 

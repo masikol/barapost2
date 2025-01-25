@@ -6,91 +6,26 @@ import pytest
 
 from src.containers import Fasta
 from src.remote_blast.remote_blast import RemoteBlast
-from src.reader_system.ReaderWrapper import ReaderWrapper
 from src.config.remote_blast import AUTHOR_EMAIL, TOOL_NAME
 
+from tests.test_remote_blast.fixtures import query_seq_1, \
+                                             query_seq_2, \
+                                             query_seq_3, \
+                                             test_organisms, \
+                                             tmp_outdir
 
-# === Configuration ===
-
-TMP_OUTDIR = os.path.join(
-    os.path.dirname(__file__),
-    'data',
-    'test_outdir'
-)
-if not os.path.isdir(TMP_OUTDIR):
-    os.makedirs(TMP_OUTDIR)
-# end if
-
-
-# === Auxiliary functions ===
-
-def read_first_fasta_seq(input_fpath : str) -> Fasta:
-    reader_wrapper = ReaderWrapper(
-        file_paths=[input_fpath],
-        packet_size=1,
-        probing_batch_size=1,
-        mode='seq_count'
-    )
-    with reader_wrapper as input_handle:
-        for container_packet in input_handle:
-            result_container = next(iter(container_packet))
-            break
-        # end of
-    # end with
-    return result_container
-# end def
-
-
-# === Fixtures ===
-
-@pytest.fixture
-def query_seq_1() -> Fasta:
-    input_file_path = os.path.join(
-        os.path.dirname(__file__),
-        'data',
-        'query_corona_seq.fasta'
-    )
-    return read_first_fasta_seq(input_file_path)
-# end def
-
-@pytest.fixture
-def query_seq_2() -> Fasta:
-    input_file_path = os.path.join(
-        os.path.dirname(__file__),
-        'data',
-        '52a41318-f8b9-4d61-a21f-4a907f107973.fasta'
-    )
-    return read_first_fasta_seq(input_file_path)
-# end def
-
-@pytest.fixture
-def query_seq_3() -> Fasta:
-    input_file_path = os.path.join(
-        os.path.dirname(__file__),
-        'data',
-        '711bf04d-20f5-4418-9712-16168ef98999.fasta'
-    )
-    return read_first_fasta_seq(input_file_path)
-# end def
-
-@pytest.fixture
-def test_organisms() -> Sequence[str]:
-    return ['561879', '2697049']
-# end def
-
-
-# === Test classes ===
 
 class TestMakeRequestData:
 
     def test_request_payload_data_minimal(self,
                                           query_seq_1 : Fasta,
                                           query_seq_2 : Fasta,
-                                          query_seq_3 : Fasta):
+                                          query_seq_3 : Fasta,
+                                          tmp_outdir : str):
         remote_blast = RemoteBlast(
             blast_algorithm='megaBlast',
             organisms=[],
-            output_dirpath=TMP_OUTDIR
+            output_dirpath=tmp_outdir
         )
         request_data : dict = remote_blast._make_BLAST_PUT_request_data(
             packet=[query_seq_1, query_seq_2, query_seq_3,]
@@ -127,11 +62,12 @@ class TestMakeRequestData:
                                             query_seq_1 : Fasta,
                                             query_seq_2 : Fasta,
                                             query_seq_3 : Fasta,
-                                            test_organisms : Sequence[str]):
+                                            test_organisms : Sequence[str],
+                                            tmp_outdir : str):
         remote_blast = RemoteBlast(
             blast_algorithm='megaBlast',
             organisms=test_organisms,
-            output_dirpath=TMP_OUTDIR
+            output_dirpath=tmp_outdir
         )
         request_data : dict = remote_blast._make_BLAST_PUT_request_data(
             packet=[query_seq_1, query_seq_2, query_seq_3,]
