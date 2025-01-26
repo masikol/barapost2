@@ -1,0 +1,8 @@
+# Here are accessions and names of GenBank records
+# that can be used as references for anotation by `barapost-local.py`
+# You are welcome to edit this file by adding,
+#   removing or muting lines (with adding '#' characters in it's beginning, just like this description).
+# `barapost-local.py` will skip lines muted with '#' character.
+# You can specify your own FASTA files that you want to use as references for `barapost-local.py`.
+#   To do it, just write your FASTA file's path to this TSV file in new line.
+accession	record_name	occurrence_number	replicons_checked

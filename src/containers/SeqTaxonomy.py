@@ -2,6 +2,7 @@
 from typing import Sequence
 from functools import reduce
 
+from src.util.strings import str_None_rep
 from src.config.taxonomy_config import TAXONOMY_SEP, \
                                        OWN_SEQ_TAX_SEP, \
                                        TAXONOMY_COLNAMES, \
@@ -126,7 +127,7 @@ class SeqTaxonomy:
 
     def to_tsv_row(self, sep : str = TAXONOMY_SEP) -> str:
         values = map(
-            _str_None_rep,
+            str_None_rep,
             (
                 self.seq_id,
                 self.rank,
@@ -206,10 +207,3 @@ class SeqTaxonomy:
         return 'SeqTaxonomy(\n{}\n)'.format(self.__str__())
     # end def
 # end class
-
-
-def _str_None_rep(sth, None_rep : str = '') -> str:
-    # It's a wrapper for str function,
-    #     but is handles None is a special way
-    return None_rep if sth is None else str(sth)
-# end def

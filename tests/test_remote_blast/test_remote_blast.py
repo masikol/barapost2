@@ -6,7 +6,7 @@ import pytest
 from src.containers import Fasta
 import src.remote_blast.blast_errors as berr
 from src.containers.AlignResult import AlignResult
-from src.remote_blast.remote_blast import RemoteBlast
+from src.remote_blast.RemoteBlast import RemoteBlast
 
 from tests.test_remote_blast.fixtures import query_seq_1, \
                                              query_seq_2, \
@@ -23,15 +23,19 @@ class TestRemoteBlast:
                                 query_seq_3 : Fasta,
                                 test_organisms : Sequence[str],
                                 tmp_outdir : str):
-
         remote_blast = RemoteBlast(
             blast_algorithm='megaBlast',
-            organisms=[test_organisms],
+            organisms=test_organisms,
             output_dirpath=tmp_outdir
         )
-        packet=[query_seq_1, query_seq_2, query_seq_3,]
+        packet = [query_seq_1, query_seq_2, query_seq_3,]
         request_id, wait_time = remote_blast.submit_remote_blast(packet)
-        result = remote_blast.retrieve_results(request_id, wait_time)
+
+        try:
+            result = remote_blast.retrieve_results(request_id, wait_time)
+        except berr.BlastError as err:
+            assert False, f'Error in test_basic_remote_blast: {err}'
+        # end try
 
         assert len(result) == 3
         assert type(
@@ -69,10 +73,10 @@ class TestRemoteBlast:
         #   and BlastError(ACTION_NO_HITS)
         remote_blast = RemoteBlast(
             blast_algorithm='megaBlast',
-            organisms=[test_organisms],
+            organisms=test_organisms,
             output_dirpath=tmp_outdir
         )
-        packet=[query_seq_3,]
+        packet = [query_seq_3,]
         request_id, wait_time = remote_blast.submit_remote_blast(packet)
         with pytest.raises(berr.BlastError) as excinfo:
             remote_blast.retrieve_results(request_id, wait_time)
@@ -90,7 +94,7 @@ class TestRemoteBlast:
 
         remote_blast = RemoteBlast(
             blast_algorithm='megaBlast',
-            organisms=[test_organisms],
+            organisms=test_organisms,
             output_dirpath=tmp_outdir
         )
 

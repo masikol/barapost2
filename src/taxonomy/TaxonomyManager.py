@@ -21,9 +21,9 @@ class TaxonomyManager:
         if not os.path.isfile(self._taxonomy_fpath) \
            or os.path.getsize(self._taxonomy_fpath) == 0:
             self._init_tax_file()
-            self._saved_seq_ids = set()
+            self._saved_seq_ids = set() # TODO: why not a taxonomy dict, like in HitManager?
         # end if
-        self._saved_seq_ids = self._read__saved_seq_ids()
+        self._saved_seq_ids = self._read_saved_seq_ids()
     # end def
 
     def _init_tax_file(self):
@@ -36,7 +36,7 @@ class TaxonomyManager:
         # end with
     # end def
 
-    def _read__saved_seq_ids(self) -> dict:
+    def _read_saved_seq_ids(self) -> dict:
         with open(self._taxonomy_fpath, 'rt') as in_handle:
             lines = in_handle.readlines()[1:] # pass the header
             _saved_seq_ids = set(

@@ -5,7 +5,7 @@ from typing import Sequence
 import pytest
 
 from src.containers import Fasta
-from src.remote_blast.remote_blast import RemoteBlast
+from src.remote_blast.RemoteBlast import RemoteBlast
 from src.config.remote_blast import AUTHOR_EMAIL, TOOL_NAME
 
 from tests.test_remote_blast.fixtures import query_seq_1, \
