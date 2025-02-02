@@ -9,7 +9,7 @@ from tests.test_read_write.fixtures import some_plain_fasta_fpath, \
 
 class TestPacketSize:
 
-    def test_packet_size_of_one(self, some_plain_fasta_fpath):
+    def test_packet_size_of_one(self, some_plain_fasta_fpath : str):
 
         packet_size = 1
 
@@ -26,7 +26,7 @@ class TestPacketSize:
     # end def
 
 
-    def test_packet_size_is_multiple(self, some_plain_fasta_fpath):
+    def test_packet_size_is_multiple(self, some_plain_fasta_fpath : str):
         # Here, packet_size is a multiple of the number of seqs
         #   in the test input file
 
@@ -45,7 +45,7 @@ class TestPacketSize:
     # end def
 
 
-    def test_packet_size_is_not_multiple(self, some_plain_fasta_fpath):
+    def test_packet_size_is_not_multiple(self, some_plain_fasta_fpath : str):
         # Here, packet_size is NOT a multiple of the number of seqs
         #   in the test input file
 
@@ -56,7 +56,6 @@ class TestPacketSize:
             packet_size=packet_size
         )
 
-        packet_sizes_expected = [3, 3, 2]
         packet_sizes_obtained = list()
 
         with reader as input_handle:
@@ -67,11 +66,12 @@ class TestPacketSize:
             # end for
         # end with
 
+        packet_sizes_expected = [3, 3, 2]
         assert packet_sizes_expected == packet_sizes_obtained
     # end def
 
 
-    def test_packet_size_more_than_num_seqs(self, some_plain_fasta_fpath):
+    def test_packet_size_more_than_num_seqs(self, some_plain_fasta_fpath : str):
         # Here, packet_size is more than the number of seqs
         #   in the test input file
 
@@ -88,5 +88,65 @@ class TestPacketSize:
 
         assert len(seq_packets) == 1
         assert len(next(iter(seq_packets))) == 8 # total num of seqs in the test input file
+    # end def
+
+
+    def test_packet_size_multiple_files_is_multiple(self,
+                                                    some_plain_fasta_fpath : str,
+                                                    some_gzipped_fasta_fpath : str):
+        # Here, packet_size is a multiple of the number of seqs
+        #   in the first test input file
+        packet_size = 4
+
+        reader = ReaderWrapper(
+            file_paths=[
+                some_plain_fasta_fpath,
+                some_gzipped_fasta_fpath,
+            ],
+            packet_size=packet_size
+        )
+
+        packet_sizes_obtained = list()
+
+        with reader as input_handle:
+            for seq_packet in input_handle:
+                packet_sizes_obtained.append(
+                    len(seq_packet)
+                )
+            # end for
+        # end with
+
+        packet_sizes_expected = [4, 4, 4, 3]
+        assert packet_sizes_expected == packet_sizes_obtained
+    # end def
+
+
+    def test_packet_size_multiple_files_is_not_multiple(self,
+                                                        some_plain_fasta_fpath : str,
+                                                        some_gzipped_fasta_fpath : str):
+        # Here, packet_size is NOT a multiple of the number of seqs
+        #   in the first test input file
+        packet_size = 3
+
+        reader = ReaderWrapper(
+            file_paths=[
+                some_plain_fasta_fpath,
+                some_gzipped_fasta_fpath,
+            ],
+            packet_size=packet_size
+        )
+
+        packet_sizes_obtained = list()
+
+        with reader as input_handle:
+            for seq_packet in input_handle:
+                packet_sizes_obtained.append(
+                    len(seq_packet)
+                )
+            # end for
+        # end with
+
+        packet_sizes_expected = [3, 3, 2, 3, 3, 1]
+        assert packet_sizes_expected == packet_sizes_obtained
     # end def
 # end class

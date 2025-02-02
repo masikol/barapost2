@@ -27,6 +27,9 @@ seq: {seq_concise}.\n'''
 
     def _get_consice_seq(self):
         n_chars_show = 30
+        if len(self.seq) <= n_chars_show*2:
+            return self.seq
+        # end if
         n_chars_omitted = len(self.seq) - 2*n_chars_show
         return '{}../{:,}bp/..{}'.format(
             self.seq[:n_chars_show],

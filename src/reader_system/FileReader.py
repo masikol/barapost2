@@ -152,19 +152,41 @@ class FileReader(ABC):
             self._end_of_curr_file = False
         # end if
 
-        return self._make_packet()
+        try:
+            packet = self._make_packet()
+        except StopIteration:
+            # This will be raised if the previous packet exhausts an input file
+            self._switch_to_next_input_file()
+            self._end_of_curr_file = False
+            packet = self._make_packet()
+        # end try
+        return packet
     # end def
 
     def _switch_to_next_input_file(self):
         # TODO: this won't work if self.file_paths is a generator
         #   It won't be a generator, anyway, so let it be so
+        self._increment_curr_file_i()
+
+        found = False
+        while not found:
+            self._curr_file_path = self.file_paths[self._curr_file_i]
+            self.reader = self._open_gzipwise(self._curr_file_path)
+            try:
+                self._skip_n_first_records()
+            except StopIteration:
+                self._increment_curr_file_i()
+            else:
+                found = True
+            # end try
+        # end while
+    # end def
+
+    def _increment_curr_file_i(self):
         self._curr_file_i += 1
         if self._curr_file_i >= len(self.file_paths):
             raise StopIteration
         # end if
-        self._curr_file_path = self.file_paths[self._curr_file_i]
-        self.reader = self._open_gzipwise(self._curr_file_path)
-        self._skip_n_first_records()
     # end def
 
     def open(self) -> None:
@@ -181,15 +203,21 @@ class FileReader(ABC):
     # end def
 
     def _skip_n_first_records(self):
+        # TODO: set self.__end_of_curr_file here, not near _switch_to_next_input_file call!
         n_records_to_skip = self._get_n_records_to_skip()
         if n_records_to_skip > 0:
+            record = None
             for i in range(n_records_to_skip):
-                self._read_single_record()
+                record = self._read_single_record()
             # end for
+            if self._check_file_end(record):
+                raise StopIteration
+            # end if
         # end if
     # end def
 
     def _get_n_records_to_skip(self) -> int:
+        # TODO: basename? really? COLLISION ALERT!
         in_file_basename = os.path.basename(self._curr_file_path)
         if not in_file_basename in self.n_first_skip_dict:
             return 0
