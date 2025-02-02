@@ -37,7 +37,7 @@ class TestBasicIO:
         writer = WriterWrapper(
             outdir_path=tmp_output_dir_path,
             _type_='fasta',
-            line_width=60
+            line_width=60 # the test input file has line width of 60 chars
         )
 
         with reader as input_handle, \
