@@ -11,8 +11,9 @@ from src.reader_system.FastaReader import FastaReader
 from src.reader_system.FastqReader import FastqReader
 from src.reader_system.Fast5Reader import Fast5Reader
 from src.reader_system.Pod5Reader  import Pod5Reader
-from src.reader_system.Slow5Reader import Slow5Reader
-from src.reader_system.Blow5Reader import Blow5Reader
+# TODO: S/BLOW5 is to be implemented later
+# from src.reader_system.Slow5Reader import Slow5Reader
+# from src.reader_system.Blow5Reader import Blow5Reader
 
 
 # TODO: don't forget to move higher to some config abstraction level
@@ -103,16 +104,17 @@ class ReaderWrapper(object):
                 file_paths=self.file_paths,
                 n_first_skip_dict=n_first_skip_dict
             )
-        elif fs.is_blow5(curr_file_path):
-            self.reader = Blow5Reader(
-                file_paths=self.file_paths,
-                n_first_skip_dict=n_first_skip_dict
-            )
-        elif fs.is_slow5(curr_file_path):
-            self.reader = Slow5Reader(
-                file_paths=self.file_paths,
-                n_first_skip_dict=n_first_skip_dict
-            )
+        # TODO: S/BLOW5 is to be implemented later
+        # elif fs.is_blow5(curr_file_path):
+        #     self.reader = Blow5Reader(
+        #         file_paths=self.file_paths,
+        #         n_first_skip_dict=n_first_skip_dict
+        #     )
+        # elif fs.is_slow5(curr_file_path):
+        #     self.reader = Slow5Reader(
+        #         file_paths=self.file_paths,
+        #         n_first_skip_dict=n_first_skip_dict
+        #     )
         else:
             err_msg = self._make_invalid_file_type_err_msg(curr_file_path)
             raise ValueError(err_msg)
@@ -132,7 +134,9 @@ class ReaderWrapper(object):
         file_type = fs.get_hts_file_type(file_path)
         allowed_extensions = fs.FASTA_EXTENSIONS \
                            | fs.FASTQ_EXTENSIONS \
-                           | {'fast5', 'pod5', 'blow5', 'slow5'}
+                           | {'fast5', 'pod5'}
+                           # TODO: S/BLOW5 is to be implemented later
+                           # | {'fast5', 'pod5', 'blow5', 'slow5'}
         return 'Invalid file type (extension): `{}`. Allowed types: {}.'.format(
             file_type,
             ', '.join(allowed_extensions)

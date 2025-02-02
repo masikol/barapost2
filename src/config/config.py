@@ -1,1 +1,3 @@
-OUTPUT_DIR = './data'
+
+# TODO: remove
+# OUTPUT_DIR = './data'

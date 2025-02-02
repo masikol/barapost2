@@ -74,16 +74,17 @@ def is_pod5(file_path : str) -> bool:
 # end def
 
 
-def is_blow5(file_path : str) -> bool:
-    extension = get_file_extension(file_path)
-    return extension.lower() == 'blow5'
-# end def
+# TODO: S/BLOW5 is to be implemented later
+# def is_blow5(file_path : str) -> bool:
+#     extension = get_file_extension(file_path)
+#     return extension.lower() == 'blow5'
+# # end def
 
-
-def is_slow5(file_path : str) -> bool:
-    extension = get_file_extension(file_path)
-    return extension.lower() == 'slow5'
-# end def
+# TODO: S/BLOW5 is to be implemented later
+# def is_slow5(file_path : str) -> bool:
+#     extension = get_file_extension(file_path)
+#     return extension.lower() == 'slow5'
+# # end def
 
 
 def remove_bad_chars(string : str) -> str:

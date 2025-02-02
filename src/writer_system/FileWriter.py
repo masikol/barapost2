@@ -4,7 +4,8 @@ import gzip
 from typing import TextIO, MutableSequence
 from abc import ABC, abstractmethod
 
-from src.config.config import OUTPUT_DIR
+# TODO: remove
+# from src.config.config import OUTPUT_DIR
 
 from src.containers.ClassifContainer import ClassifContainer
 
@@ -21,7 +22,12 @@ class FileWriter(ABC):
     # end def
 
 
-    def __init__(self, _gzip_: bool, n_max_out: int, ext = 'fasta'):
+    def __init__(self,
+                 outdir_path: str,
+                 _gzip_: bool,
+                 n_max_out: int,
+                 ext : str = 'fasta'):
+        self.outdir_path = outdir_path
         self._gzip_ = _gzip_
         self.open_func = gzip.open if self._gzip_ else open
         self.n_max_out = n_max_out
@@ -85,7 +91,7 @@ class FileWriter(ABC):
             extension = f'{extension}.gz'
         # end if
         return os.path.join(
-            OUTPUT_DIR,
+            self.outdir_path,
             f'{label}_{index}.{extension}'
         )
     # end def

@@ -3,7 +3,8 @@ import os
 
 from pod5 import Writer
 
-from src.config.config import OUTPUT_DIR
+# TODO: remove
+# from src.config.config import OUTPUT_DIR
 
 from src.writer_system.FileWriter import FileWriter
 
@@ -25,7 +26,7 @@ class Pod5Writer(FileWriter):
 
     def _get_out_file_path(self, label : str, index : str) -> str:
         return os.path.join(
-            OUTPUT_DIR,
+            self.outdir_path,
             f'{label}_{index}.{self.ext}'
         )
     # end def

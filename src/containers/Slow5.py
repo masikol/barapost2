@@ -1,6 +1,7 @@
 
 from src.containers.SeqRecord import SeqRecord
 
+# TODO: S/BLOW5 is to be implemented later
 class Slow5(SeqRecord):
 
     __slots__ = ('record')

@@ -21,7 +21,7 @@ class Pod5Reader(FileReader):
     # end def
 
     def open(self) -> None:
-        with DatasetReader(self.file_path) as file:
+        with DatasetReader(self._curr_file_path) as file:
             self.reader = file
             self.reader_generator = self.reader.reads()
         # end with

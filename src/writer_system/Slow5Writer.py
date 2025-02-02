@@ -2,7 +2,8 @@
 import os
 from pyslow5 import Open
 
-from src.config.config import OUTPUT_DIR
+# TODO: remove
+# from src.config.config import OUTPUT_DIR
 
 from src.containers.Slow5 import Slow5
 
@@ -19,7 +20,7 @@ class Slow5Writer(FileWriter):
 
     def _get_out_file_path(self, label : str, index : str) -> str:
         return os.path.join(
-            OUTPUT_DIR,
+            self.outdir_path,
             f'{label}_{index}.{self.ext}'
         )
     # end def
