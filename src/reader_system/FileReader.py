@@ -78,8 +78,8 @@ class FileReader(ABC):
             if self._check_file_end(record):
                 self._end_of_curr_file = True
                 if len(self._packet) == 0:
-                    self._reset_packet()
-                    return self._packet
+                    self._reset_packet() # TODO: do we really need it here?
+                    raise StopIteration
                 else:
                     packet = self._packet
                     self._reset_packet()

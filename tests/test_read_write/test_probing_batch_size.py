@@ -20,14 +20,14 @@ class TestProbingBatchSize:
             seq_packet = next(iter(input_handle))
         # end with
 
-        num_records_expected = 7 # total num of seqs in the test input file
+        num_records_expected = 8 # total num of seqs in the test input file
         num_records_obtained = len(seq_packet)
 
         assert num_records_obtained == num_records_expected
     # end def
 
     def test_probing_batch(self, some_plain_fasta_fpath : str):
-        probing_batch_size = 4
+        probing_batch_size = 5
         reader = ReaderWrapper(
             file_paths=[some_plain_fasta_fpath],
             probing_batch_size=probing_batch_size,
