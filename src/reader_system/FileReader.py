@@ -13,9 +13,9 @@ class FileReader(ABC):
 
     def __init__(self,
                  file_paths : Sequence[str],
+                 packet_mode : str = 'seq_count',
                  packet_size : int = 1,
                  probing_batch_size : int = -1,
-                 mode : str = 'seq_count',
                  max_seq_len : int = -1,
                  n_first_skip_dict : dict = dict()):
 
@@ -27,7 +27,7 @@ class FileReader(ABC):
 
         self.packet_size = packet_size
         self.probing_batch_size = probing_batch_size
-        self.mode = mode
+        self.packet_mode = packet_mode
         self.max_seq_len = max_seq_len
         self.n_first_skip_dict = n_first_skip_dict # in_file_basename : n_records_to_skip
 
@@ -36,13 +36,13 @@ class FileReader(ABC):
         self._n_records_read_total = 0
         self._end_of_curr_file = False
 
-        if self.mode == 'seq_count':
+        if self.packet_mode == 'seq_count':
             self._make_packet = self._make_seq_count_packet
-        elif self.mode == 'sum_seq_len':
+        elif self.packet_mode == 'sum_seq_len':
             self._make_packet = self._make_sum_seq_len_packet
         else:
             raise ValueError(
-                f'Indalid mode: `{self.mode}`. Allowed nodes: `seq_count`, `sum_seq_len`.'
+                f'Indalid packet_mode: `{self.packet_mode}`. Allowed modes: `seq_count`, `sum_seq_len`.'
             )
         # end if
 
@@ -88,7 +88,7 @@ class FileReader(ABC):
             # end if
             self._packet.append(record)
 
-            if self.mode == 'sum_seq_len':
+            if self.packet_mode == 'sum_seq_len':
                 self._sum_seq_len_read += self._increment_sum(record.seq)
             # end if
 
