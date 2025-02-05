@@ -1,6 +1,7 @@
 
 import os
 import gzip
+from io import StringIO
 from io import TextIOWrapper
 from abc import ABC, abstractmethod
 from typing import Generator, Callable, Sequence, MutableSequence
@@ -23,7 +24,7 @@ class FileReader(ABC):
         # TODO: catch StopIteration
         # Or we will handle this at the arg parsing stage?
         self._curr_file_path = next(iter(file_paths))
-        self._curr_file_i = 0
+        self._curr_file_i = -1 # TODO: ugly
 
         self.packet_size = packet_size
         self.probing_batch_size = probing_batch_size
@@ -148,7 +149,7 @@ class FileReader(ABC):
         # end if
 
         if self._end_of_curr_file:
-            self._switch_to_next_input_file()
+            self._wind_to_next_input_file()
             self._end_of_curr_file = False
         # end if
 
@@ -156,14 +157,14 @@ class FileReader(ABC):
             packet = self._make_packet()
         except StopIteration:
             # This will be raised if the previous packet exhausts an input file
-            self._switch_to_next_input_file()
+            self._wind_to_next_input_file()
             self._end_of_curr_file = False
             packet = self._make_packet()
         # end try
         return packet
     # end def
 
-    def _switch_to_next_input_file(self):
+    def _wind_to_next_input_file(self):
         # TODO: this won't work if self.file_paths is a generator
         #   It won't be a generator, anyway, so let it be so
         self._increment_curr_file_i()
@@ -175,7 +176,16 @@ class FileReader(ABC):
             try:
                 self._skip_n_first_records()
             except StopIteration:
-                self._increment_curr_file_i()
+                try:
+                    self._increment_curr_file_i()
+                except StopIteration:
+                    # And if we get a StopIteration even here, then there is
+                    #   nothing to read at all: all records were skipped
+                    #   before first packet was made.
+                    # TODO: ugly
+                    self.reader = StringIO('') # empty stream
+                    return
+                # end try
             else:
                 found = True
             # end try
@@ -190,8 +200,9 @@ class FileReader(ABC):
     # end def
 
     def open(self) -> None:
-        self.reader = self._open_gzipwise(self._curr_file_path)
-        self._skip_n_first_records()
+        # So that it will be 0 after first _increment_curr_file_i call
+        self._curr_file_i = -1 # TODO: ugly
+        self._wind_to_next_input_file()
     # end def
 
     def _open_gzipwise(self, infile_path : str) -> TextIOWrapper:
@@ -203,16 +214,16 @@ class FileReader(ABC):
     # end def
 
     def _skip_n_first_records(self):
-        # TODO: set self.__end_of_curr_file here, not near _switch_to_next_input_file call!
+        # TODO: set self.__end_of_curr_file here, not near _wind_to_next_input_file call!
         n_records_to_skip = self._get_n_records_to_skip()
-        if n_records_to_skip > 0:
-            record = None
-            for i in range(n_records_to_skip):
-                record = self._read_single_record()
-            # end for
-            if self._check_file_end(record):
-                raise StopIteration
-            # end if
+        if n_records_to_skip <= 0:
+            return
+        # end if
+        for _ in range(n_records_to_skip):
+            record = self._read_single_record()
+        # end for
+        if self._check_file_end(record):
+            raise StopIteration
         # end if
     # end def
 
