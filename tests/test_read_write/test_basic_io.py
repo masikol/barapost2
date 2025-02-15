@@ -46,7 +46,7 @@ class TestBasicIO:
                 classified_packet = _mock_classify(packet)
                 output_handle.write(classified_packet)
             # end for
-        # end with)
+        # end with
 
         expected_outfpath = _make_expected_mock_outfpath(
             tmp_output_dir_path,

@@ -2,9 +2,6 @@
 import os
 import pyslow5 as s5
 
-# TODO: remove
-# from src.config.config import OUTPUT_DIR
-
 from src.containers.Blow5 import Blow5
 
 from src.writer_system.FileWriter import FileWriter
@@ -34,5 +31,4 @@ class Blow5Writer(FileWriter):
     def _open_new_outfile(self, outfpath : str) -> s5.Open:
         return s5.Open(outfpath, 'w')
     # end def
-
 # end class

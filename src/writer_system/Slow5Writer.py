@@ -2,9 +2,6 @@
 import os
 from pyslow5 import Open
 
-# TODO: remove
-# from src.config.config import OUTPUT_DIR
-
 from src.containers.Slow5 import Slow5
 
 from src.writer_system.FileWriter import FileWriter

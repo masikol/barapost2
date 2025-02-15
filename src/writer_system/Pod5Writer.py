@@ -3,9 +3,6 @@ import os
 
 from pod5 import Writer
 
-# TODO: remove
-# from src.config.config import OUTPUT_DIR
-
 from src.writer_system.FileWriter import FileWriter
 
 from src.containers.Pod5 import Pod5

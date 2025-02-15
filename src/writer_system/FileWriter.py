@@ -2,10 +2,11 @@
 import os
 import gzip
 from typing import TextIO, MutableSequence
+from io import TextIOWrapper
 from abc import ABC, abstractmethod
 
-# TODO: remove
-# from src.config.config import OUTPUT_DIR
+from pod5 import Writer
+from ont_fast5_api.multi_fast5 import MultiFast5File
 
 from src.containers.ClassifContainer import ClassifContainer
 
@@ -97,8 +98,31 @@ class FileWriter(ABC):
     # end def
 
     def close(self):
+        # Close output filed and remove open but empty files
         for v_tuple in self.record_chunk_counter.values():
-            v_tuple[OUT_FILE_HANDLE_IDX].close()
+            handle, file_path = v_tuple[OUT_FILE_HANDLE_IDX], None
+            remove_empty_file = v_tuple[RECORD_COUNT_IDX] == 0
+            if remove_empty_file:
+                file_path = self._get_file_path_from_handle(handle)
+            # end if
+            handle.close()
+            if remove_empty_file:
+                os.unlink(file_path)
+            # end if
         # end for
+    # end def
+
+    def _get_file_path_from_handle(self, handle): # type hint?
+        if type(handle) == TextIOWrapper:
+            return handle.name
+        elif type(handle) == Writer:
+            return str(handle.path)
+        elif type(handle) == MultiFast5File:
+            return handle.filename
+        else:
+            raise TypeError(
+                'Error: improper output handle type: `{}`'.format(type(handle))
+            )
+        # end if
     # end def
 # end class
