@@ -30,7 +30,7 @@ class FileReader(ABC):
         self.probing_batch_size = probing_batch_size
         self.packet_mode = packet_mode
         self.max_seq_len = max_seq_len
-        self.n_first_skip_dict = n_first_skip_dict # in_file_basename : n_records_to_skip
+        self.n_first_skip_dict = n_first_skip_dict # in_fpath : n_records_to_skip
 
         self._packet = []
         self._sum_seq_len_read = 0
@@ -228,13 +228,11 @@ class FileReader(ABC):
     # end def
 
     def _get_n_records_to_skip(self) -> int:
-        # TODO: basename? really? COLLISION ALERT!
-        in_file_basename = os.path.basename(self._curr_file_path)
-        if not in_file_basename in self.n_first_skip_dict:
+        if not self._curr_file_path in self.n_first_skip_dict:
             return 0
         # end if
         # TODO: catch ValueError: conversion to int
-        return self.n_first_skip_dict[in_file_basename]
+        return self.n_first_skip_dict[self._curr_file_path]
     # end def
 
     def close(self) -> None:

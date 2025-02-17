@@ -1,6 +1,4 @@
 
-import os
-
 import pytest
 
 from src.reader_system.ReaderWrapper import ReaderWrapper
@@ -15,7 +13,7 @@ class TestNFirstSkip:
                                   some_plain_fasta_fpath : str):
         n = 5
         n_first_skip_dict = {
-            os.path.basename(some_plain_fasta_fpath) : n,
+            some_plain_fasta_fpath : n,
         }
 
         reader = ReaderWrapper(
@@ -40,7 +38,7 @@ class TestNFirstSkip:
                                   some_plain_fasta_fpath : str):
         n = 8
         n_first_skip_dict = {
-            os.path.basename(some_plain_fasta_fpath) : n,
+            some_plain_fasta_fpath : n,
         }
 
         reader = ReaderWrapper(
@@ -65,7 +63,7 @@ class TestNFirstSkip:
                                   some_plain_fasta_fpath : str):
         n = 9
         n_first_skip_dict = {
-            os.path.basename(some_plain_fasta_fpath) : n,
+            some_plain_fasta_fpath : n,
         }
 
         reader = ReaderWrapper(
@@ -94,7 +92,7 @@ class TestNFirstSkip:
         #   is exhausted from the very beginning.
         n = 8 # total seq count in the first file
         n_first_skip_dict = {
-            os.path.basename(some_plain_fasta_fpath) : n,
+            some_plain_fasta_fpath : n,
         }
 
         reader = ReaderWrapper(
