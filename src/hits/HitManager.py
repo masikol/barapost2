@@ -7,9 +7,9 @@ from src.config.hits import DB_FILE_NAME, SEP, COMMENT_CHAR
 
 class HitManager:
 
-    def __init__(self, classif_dirpath : str):
+    def __init__(self, work_dirpath : str):
         self.db_fpath = os.path.join(
-            classif_dirpath,
+            work_dirpath,
             DB_FILE_NAME
         )
 

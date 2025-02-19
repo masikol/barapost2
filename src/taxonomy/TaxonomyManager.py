@@ -6,6 +6,7 @@ import src.filesystem as fs
 from src.containers.SeqTaxonomy import SeqTaxonomy
 from src.taxonomy.TaxonomySearcher import TaxonomySearcher
 from src.config.taxonomy_config import TAXONOMY_SEP, \
+                                       DB_FILE_NAME, \
                                        OWN_SEQ_TAX_SEP, \
                                        TAXONOMY_COLNAMES, \
                                        OWN_SEQ_TAXONOMY_FMT, \
@@ -14,12 +15,15 @@ from src.config.taxonomy_config import TAXONOMY_SEP, \
 
 class TaxonomyManager:
 
-    def __init__(self, taxonomy_fpath : str):
-        self._taxonomy_fpath = taxonomy_fpath
+    def __init__(self, work_dirpath : str):
+        self._db_fpath = os.path.join(
+            work_dirpath,
+            DB_FILE_NAME
+        )
         self._taxonomy_searcher = TaxonomySearcher()
 
-        if not os.path.isfile(self._taxonomy_fpath) \
-           or os.path.getsize(self._taxonomy_fpath) == 0:
+        if not os.path.isfile(self._db_fpath) \
+           or os.path.getsize(self._db_fpath) == 0:
             self._init_tax_file()
             self._saved_seq_ids = set() # TODO: why not a taxonomy dict, like in HitManager?
         # end if
@@ -27,7 +31,7 @@ class TaxonomyManager:
     # end def
 
     def _init_tax_file(self):
-        with open(self._taxonomy_fpath, 'wt') as out_handle:
+        with open(self._db_fpath, 'wt') as out_handle:
             out_handle.write(
                 '{}\n'.format(
                     TAXONOMY_SEP.join(TAXONOMY_COLNAMES)
@@ -37,7 +41,7 @@ class TaxonomyManager:
     # end def
 
     def _read_saved_seq_ids(self) -> dict:
-        with open(self._taxonomy_fpath, 'rt') as in_handle:
+        with open(self._db_fpath, 'rt') as in_handle:
             lines = in_handle.readlines()[1:] # pass the header
             _saved_seq_ids = set(
                 map(
@@ -58,7 +62,7 @@ class TaxonomyManager:
                 seq_taxonomy = self._taxonomy_searcher.seach_taxonomy(seq_id)
             # end if
             self._saved_seq_ids.add(seq_id)
-            with open(self._taxonomy_fpath, 'at') as out_handle:
+            with open(self._db_fpath, 'at') as out_handle:
                 out_handle.write(
                     seq_taxonomy.to_tsv_row()
                 )

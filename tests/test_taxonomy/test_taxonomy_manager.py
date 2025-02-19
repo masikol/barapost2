@@ -5,6 +5,7 @@ import pytest
 
 from src.filesystem import remove_bad_chars
 from src.containers.SeqTaxonomy import SeqTaxonomy
+from src.config.taxonomy_config import DB_FILE_NAME
 from src.taxonomy.TaxonomyManager import TaxonomyManager
 
 
@@ -52,7 +53,7 @@ class TestTaxonomyManager:
             Species='Pseudomonas brassicacearum'
         )
 
-        taxonomy_manager = TaxonomyManager(tmp_tax_fpath)
+        taxonomy_manager = TaxonomyManager(self._get_tmp_workdir_path())
         taxonomy_manager.add_taxonomy(accession_number_1)
         observed = SeqTaxonomy.from_tsv_row(
             self._get_first_data_line(tmp_tax_fpath)
@@ -80,7 +81,7 @@ class TestTaxonomyManager:
             Species='Pseudomonas_brassicacearum'
         )
 
-        taxonomy_manager = TaxonomyManager(tmp_tax_fpath)
+        taxonomy_manager = TaxonomyManager(self._get_tmp_workdir_path())
         observed = taxonomy_manager.parse_own_seq_taxonomy(
             accession_number_1,
             own_seq_haystack_str_1
@@ -107,7 +108,7 @@ class TestTaxonomyManager:
             Species=None
         )
 
-        taxonomy_manager = TaxonomyManager(tmp_tax_fpath)
+        taxonomy_manager = TaxonomyManager(self._get_tmp_workdir_path())
         observed = taxonomy_manager.parse_own_seq_taxonomy(
             accession_number_1,
             own_seq_haystack_str_2
@@ -117,10 +118,14 @@ class TestTaxonomyManager:
     # end def
 
 
+    def _get_tmp_workdir_path(self) -> str:
+        return os.path.dirname(__file__)
+    # end def
+
     def _get_tmp_tax_fpath(self) -> str:
         return os.path.join(
-            os.path.dirname(__file__),
-            'tmp_taxonomy.tsv'
+            self._get_tmp_workdir_path(),
+            DB_FILE_NAME
         )
     # end def
 

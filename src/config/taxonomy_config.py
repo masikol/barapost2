@@ -37,3 +37,6 @@ OWN_SEQ_TAX_SEP = ';'
 # 6 semisolons with probable absence of name ending with species name.
 # All without spaces.
 OWN_SEQ_TAXONOMY_FMT = r"(((%s)?%s){6}(%s)?)" % (HIGH_TAX_NAME_PATT, OWN_SEQ_TAX_SEP, SPECIES_PATT)
+
+# The name of a taxonomy file in barapost work dir
+DB_FILE_NAME = 'taxonomy.tsv'
