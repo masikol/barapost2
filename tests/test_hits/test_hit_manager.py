@@ -129,6 +129,7 @@ class TestHitManager:
         )
 
         hit_manager.add_hit(some_hit)
+        # TODO: test _increment_hit here !
 
         after_len = len(hit_manager.hit_dict)
         after_keys = frozenset(
@@ -151,7 +152,7 @@ class TestHitManager:
         inc_value = 4
         expected = before_count + inc_value
 
-        hit_manager.increment_hit(some_accession, inc_value)
+        hit_manager._increment_hit(some_accession, inc_value)
 
         observed = hit_manager.hit_dict[some_accession].hit_count
 
@@ -168,7 +169,7 @@ class TestHitManager:
         before_count = hit_manager.hit_dict[some_accession].hit_count
         expected = before_count + 1
 
-        hit_manager.increment_hit(some_accession)
+        hit_manager._increment_hit(some_accession)
 
         observed = hit_manager.hit_dict[some_accession].hit_count
 

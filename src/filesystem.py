@@ -1,5 +1,8 @@
 
 import os
+import gzip
+import glob
+import shutil
 
 
 FASTA_EXTENSIONS = {
@@ -52,6 +55,18 @@ def get_file_extension(file_path : str) -> str:
     return file_path.split('.')[-1]
 # end def
 
+# TODO: test
+def remove_file_extension(file_path : str) -> str:
+    basename = os.path.basename(file_path)
+    if not '.' in basename:
+        return file_path
+    # end if
+    return os.path.join(
+        os.path.dirname(file_path),
+        basename[: basename.rfind('.')]
+    )
+# end def
+
 
 def get_hts_file_type(file_path : str) -> str:
     # hts: High Throughput Sequencing
@@ -101,4 +116,27 @@ def remove_bad_chars(string : str) -> str:
     # end for
 
     return string
+# end def
+
+# TODO: test
+def gzip_file(src_fpath : str, dest_fpath : str):
+    with open(src_fpath, 'rb') as input_handle, \
+         gzip.open(dest_fpath, 'wb') as output_handle:
+         shutil.copyfileobj(input_handle, output_handle)
+    # end with
+# end def
+
+
+# TODO: test
+def empty_dir(dir_path : str):
+    paths_ro_rm = glob.glob(
+        os.path.join(dir_path, '*')
+    )
+    for path in paths_ro_rm:
+        if os.path.isfile(path):
+            os.unlink(path)
+        elif os.path.isdir(path):
+            shutil.rmtree(path)
+        # end if
+    # end for
 # end def

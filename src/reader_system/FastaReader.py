@@ -32,4 +32,16 @@ class FastaReader(FileReader):
             seq=seq
         )
     # end def
+
+    def _count_records_in_curr_file(self) -> bool:
+        with self._open_gzipwise(self._curr_file_path) as input_handle:
+            record_count = sum(
+                (
+                    1 if line.startswith('>') else 0
+                    for line in input_handle.readlines()
+                )
+            )
+        # end with
+        return record_count
+    # end def
 # end class

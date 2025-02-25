@@ -5,12 +5,13 @@ import sys
 import time
 import json
 import logging
-from typing import Sequence
+from typing import Sequence, TypeAlias
 
 from src.time import humane_time
 import src.remote_blast.blast_errors as berr
 from src.containers.SeqRecord import SeqRecord
 from src.containers.AlignResult import AlignResult
+from src.util.simplify_read_id import simplify_read_id
 from src.network.insistent_https import insistent_https
 from src.config.remote_blast import PROGRAM, HITLIST_SIZE, DATABASE, \
                                     SERVER, SERVER_PATH, AUTHOR_EMAIL, TOOL_NAME
@@ -18,6 +19,8 @@ from src.config.remote_blast import PROGRAM, HITLIST_SIZE, DATABASE, \
 # TODO: don't forget to move higher to some config abstraction level
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
+
+AlignResultDict : TypeAlias = dict[str, Sequence[AlignResult]]
 
 
 class RemoteBlast:
@@ -48,7 +51,7 @@ class RemoteBlast:
     # end def
 
     def _make_BLAST_PUT_request_data(self,
-                           packet : Sequence[SeqRecord]) -> dict:
+                                     packet : Sequence[SeqRecord]) -> dict:
         # Function configures the submissoin request to BLAST server.
         # See https://blast.ncbi.nlm.nih.gov/doc/blast-help/urlapi.html#urlapi
         #
@@ -117,7 +120,7 @@ class RemoteBlast:
             # end with
             logging.error('Seems, the NCBI has denied your request')
             logging.error('Response is in file `{}`'.format(request_denial_response_fpath))
-            raise OSError('Seems, the NCBI has denied your request')
+            raise berr.BlastError(berr.ACTION_SPLIT_AND_RESEND)
         # end try
 
         return request_id, wait_time
@@ -135,7 +138,7 @@ class RemoteBlast:
 
     def retrieve_results(self,
                          request_id : str,
-                         wait_time : int) -> Sequence[AlignResult]:
+                         wait_time : int) -> AlignResultDict:
         self._wait_till_job_is_ready(request_id, wait_time)
         blast_result = self._request_results(request_id)
         return blast_result
@@ -185,7 +188,7 @@ class RemoteBlast:
                 job_ready = True
                 sys.stderr.write('\n')
                 sys.stderr.flush()
-                logging.info('Job is ready!')
+                logging.info('The job is ready!')
                 if "ThereAreHits=yes" in job_status_response:
                     for i in range(15, 0, -5):
                         sys.stderr.write('-' * i + '\n')
@@ -234,7 +237,7 @@ class RemoteBlast:
     def _wait_estimated_time(self, wait_time : int):
         # wait_time can be zero at the very beginning of resumption
         if wait_time > 0:
-            extra_seconds = 3
+            extra_seconds = wait_time // 10
             logging.info(
                 'BLAST server estimates that alignment'
                 ' will be ready in {} seconds'.format(wait_time)
@@ -274,15 +277,15 @@ class RemoteBlast:
         job_status_pattern = r'Status=([a-zA-Z]+)'
         re_search_result = re.search(job_status_pattern, job_status_response)
         if re_search_result is None:
-            raise ValueError(
-                'Cannot parse job status for request {}'.format(request_id)
-            )
+            err_message = 'Cannot parse job status for request {}'.format(request_id)
+            logging.error(err_message)
+            raise berr.BlastError(berr.ACTION_RESEND, err_message)
         # end if
         job_status = re_search_result.group(1).upper()
         return job_status
     # end def
 
-    def _request_results(self, request_id : str) -> Sequence[AlignResult]:
+    def _request_results(self, request_id : str) -> AlignResultDict:
         logging.info('Retrieving results...')
         request_data = self._make_retrieve_request_data(request_id)
         blast_results_raw = insistent_https(
@@ -313,7 +316,7 @@ class RemoteBlast:
     # end def
 
     def _parse_blast_results(self,
-                             blast_results_raw : str) -> Sequence[AlignResult]:
+                             blast_results_raw : str) -> AlignResultDict:
         try:
             result_dict = json.loads(blast_results_raw)
         except (JSONDecodeError, UnicodeDecodeError) as err:
@@ -337,13 +340,13 @@ class RemoteBlast:
         )
     # end def
 
-    def _parse_alignments(self, result_dict : dict) -> Sequence[AlignResult]:
+    def _parse_alignments(self, result_dict : dict) -> AlignResultDict:
 
         packet_align_results = dict()
 
         for output in result_dict['BlastOutput2']:
             search_results = output['report']['results']['search']
-            query_id = search_results['query_title']
+            query_id = simplify_read_id(search_results['query_title'])
             query_length = search_results['query_len']
 
             query_align_results = list()
@@ -398,7 +401,6 @@ class RemoteBlast:
                             evalue=evalue
                         )
                     )
-
                     i += 1
                     if i >= len(hits):
                         break
@@ -413,25 +415,4 @@ class RemoteBlast:
 
         return packet_align_results
     # end def
-
-
-
-
-    # TODO: do this in prober_kernel
-    # def _save_request_cofiguration(self, request_id, packet_size, packet_mode):
-    #     # Save temporary data
-    #     # TODO: define 'request_configuration.txt' elsewhere
-    #     request_configuration = {
-    #         'request_id'  : request_id,
-    #         'packet_size' : packet_size,
-    #         'packet_mode' : packet_mode,
-    #     }
-    #     request_config_fpath = os.path.join(
-    #         self.output_dirpath,
-    #         'request_configuration.txt'
-    #     )
-    #     with open(request_config_fpath, 'w') as out_handle:
-    #         json.dump(request_configuration, out_handle)
-    #     # end with
-    # # end def
 # end class

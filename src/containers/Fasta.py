@@ -1,8 +1,8 @@
 
-from src.containers.SeqRecord import SeqRecord
+from src.containers.RealSeqRecord import RealSeqRecord
 
 
-class Fasta(SeqRecord):
+class Fasta(RealSeqRecord):
 
     __slots__ = ('header', 'seq')
 
@@ -36,5 +36,10 @@ seq: {seq_concise}.\n'''
             n_chars_omitted,
             self.seq[-n_chars_show:]
         )
+    # end def
+
+    # TODO: test
+    def get_seq_id(self) -> str:
+        return self.header.partition(' ')[0]
     # end def
 # end class

@@ -1,6 +1,7 @@
 
 import os
 import gzip
+import logging
 from io import StringIO
 from io import TextIOWrapper
 from abc import ABC, abstractmethod
@@ -10,8 +11,16 @@ import src.filesystem as fs
 from src.containers.SeqRecord import SeqRecord
 
 
+# TODO: don't forget to move higher to some config abstraction level
+logging.basicConfig(level = logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 class FileReader(ABC):
 
+    # TODO: add verbose mode:
+    #  start processing
+    #  end processing etc
     def __init__(self,
                  file_paths : Sequence[str],
                  packet_mode : str = 'seq_count',
@@ -67,6 +76,12 @@ class FileReader(ABC):
 
     @abstractmethod
     def _check_file_end(self, record : SeqRecord) -> bool:
+        raise NotImplementedError()
+    # end def
+
+    # TODO: test
+    @abstractmethod
+    def _count_records_in_curr_file(self) -> bool:
         raise NotImplementedError()
     # end def
 
@@ -145,10 +160,16 @@ class FileReader(ABC):
         stop = self.probing_batch_size != -1 \
                and self._n_records_read_total >= self.probing_batch_size
         if stop:
+            logging.info('Finish processing file `{}`'.format(
+                self._curr_file_path)
+            )
             raise StopIteration
         # end if
 
         if self._end_of_curr_file:
+            logging.info('Finish processing file `{}`'.format(
+                self._curr_file_path)
+            )
             self._wind_to_next_input_file()
             self._end_of_curr_file = False
         # end if
@@ -156,6 +177,9 @@ class FileReader(ABC):
         try:
             packet = self._make_packet()
         except StopIteration:
+            logging.info('Finish processing file `{}`'.format(
+                self._curr_file_path)
+            )
             # This will be raised if the previous packet exhausts an input file
             self._wind_to_next_input_file()
             self._end_of_curr_file = False
@@ -167,6 +191,7 @@ class FileReader(ABC):
     def _wind_to_next_input_file(self):
         # TODO: this won't work if self.file_paths is a generator
         #   It won't be a generator, anyway, so let it be so
+
         self._increment_curr_file_i()
 
         found = False
@@ -187,6 +212,9 @@ class FileReader(ABC):
                     return
                 # end try
             else:
+                logging.info('Start processing file `{}`'.format(
+                    self._curr_file_path)
+                )
                 found = True
             # end try
         # end while
@@ -219,6 +247,12 @@ class FileReader(ABC):
         if n_records_to_skip <= 0:
             return
         # end if
+
+        n_records_total = self._count_records_in_curr_file()
+        if n_records_to_skip >= n_records_total:
+            raise StopIteration
+        # end if
+
         for _ in range(n_records_to_skip):
             record = self._read_single_record()
         # end for
@@ -235,9 +269,23 @@ class FileReader(ABC):
         return self.n_first_skip_dict[self._curr_file_path]
     # end def
 
+
     def close(self) -> None:
         if self.reader:
             self.reader.close()
         # end if
+    # end def
+
+
+    # TODO: somewhat ugly but important
+    def get_curr_infpath(self) -> str:
+        return self._curr_file_path
+    # end def
+
+
+    def pass_n_records(self, n : int):
+        for _ in range(n):
+            self._read_single_record()
+        # end for
     # end def
 # end class

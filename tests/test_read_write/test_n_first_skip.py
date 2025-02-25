@@ -4,7 +4,8 @@ import pytest
 from src.reader_system.ReaderWrapper import ReaderWrapper
 
 from tests.test_read_write.fixtures import some_plain_fasta_fpath, \
-                                           some_gzipped_fasta_fpath
+                                           some_gzipped_fasta_fpath, \
+                                           some_plain_fasta_copy_fpath
 
 
 class TestNFirstSkip:
@@ -117,4 +118,38 @@ class TestNFirstSkip:
         assert num_records_obtained == num_records_expected
     # end def
 
+
+    def test_skip_two_first_files(self,
+                                  some_plain_fasta_fpath : str,
+                                  some_gzipped_fasta_fpath : str,
+                                  some_plain_fasta_copy_fpath : str):
+        # Test winding to the third file if the first and the second files
+        #   are exhausted from the very beginning.
+        n_first_skip_dict = {
+            some_plain_fasta_fpath   : 8, # total seq count in the first file
+            some_gzipped_fasta_fpath : 7, # total seq count in the second file
+        }
+
+        reader = ReaderWrapper(
+            file_paths=[
+                some_plain_fasta_fpath,
+                some_gzipped_fasta_fpath,
+                some_plain_fasta_copy_fpath,
+            ],
+            packet_size=1000, # some large number to read them all
+            n_first_skip_dict=n_first_skip_dict
+        )
+
+        packet_concatenated = list()
+        with reader as input_handle:
+            for seq_packet in input_handle:
+                packet_concatenated.extend(seq_packet)
+            # end for
+        # end with
+
+        num_records_expected = 8 # total seq count in the third file
+        num_records_obtained = len(packet_concatenated)
+
+        assert num_records_obtained == num_records_expected
+    # end def
 # end def

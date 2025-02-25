@@ -20,6 +20,14 @@ def some_plain_fasta_fpath() -> str:
 # end def
 
 @pytest.fixture(scope='session')
+def some_plain_fasta_copy_fpath() -> str:
+    return os.path.join(
+        _TEST_DATE_DIR_PATH,
+        'some_seqs_copy.fasta'
+    )
+# end def
+
+@pytest.fixture(scope='session')
 def some_gzipped_fasta_fpath() -> str:
     return os.path.join(
         _TEST_DATE_DIR_PATH,

@@ -3,7 +3,6 @@ from ont_fast5_api.fast5_interface import get_fast5_file
 
 from src.containers.Fast5 import Fast5
 from src.reader_system.FileReader import FileReader
-from src.util.simplify_read_id import simplify_read_id
 
 
 class Fast5Reader(FileReader):

@@ -1,6 +1,7 @@
 
 import os
 
+from src.containers.AlignResult import AlignResult
 from src.containers.HitToDownload import HitToDownload
 from src.config.hits import DB_FILE_NAME, SEP, COMMENT_CHAR
 
@@ -64,12 +65,17 @@ class HitManager:
     # end def
 
 
-    def add_hit(self, hit : HitToDownload):
-        self.hit_dict[hit.accession] = hit
+    def add_hit(self, align_result : AlignResult):
+        if not align_result.hit_accession in self.hit_dict:
+            hit = HitToDownload.from_align_result(align_result)
+            self.hit_dict[align_result.hit_accession] = hit
+        else:
+            self._increment_hit(align_result.hit_accession)
+        # end if
     # end def
 
 
-    def increment_hit(self, accession: str, value : int = 1):
+    def _increment_hit(self, accession: str, value : int = 1):
         self.hit_dict[accession].increment(value)
     # end def
 

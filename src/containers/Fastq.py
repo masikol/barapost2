@@ -2,14 +2,19 @@
 import math
 import logging
 import statistics
+from typing import Sequence, TypeAlias
 
-from src.containers.SeqRecord import SeqRecord
+from src.containers.RealSeqRecord import RealSeqRecord
+
+
+SeqPacket : TypeAlias = Sequence[RealSeqRecord]
+
 
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class Fastq(SeqRecord):
+class Fastq(RealSeqRecord):
 
     __slots__ = ('header', 'seq', 'plus_line', 'quality', 'offset')
 
@@ -33,20 +38,14 @@ class Fastq(SeqRecord):
     # end def
 
     def average_quality(self) -> float:
+        # TODO: use phred offset here!!!
         avg_error_prob = statistics.mean(
-            map(self._phred_char_to_pe, self.quality)
+            map(phred_char_to_pe, self.quality)
         )
-        return self._pe_to_Q(avg_error_prob)
-    # end def
-
-    def _phred_char_to_pe(self, char : str) -> float:
-        # pe is error probability
-        Q = ord(char) - self.offset
-        return 10 ** (-Q / 10)
-    # end def
-
-    def _pe_to_Q(self, error_prob : float):
-        return -10 * math.log10(error_prob)
+        return round(
+            pe_to_Q(avg_error_prob),
+            2
+        )
     # end def
 
     def __str__(self):
@@ -81,4 +80,42 @@ quality: {quality_concise}.\n'''
             string[-n_chars_show:]
         )
     # end def
+
+    # TODO: test
+    def get_seq_id(self) -> str:
+        return self.header.partition(' ')[0]
+    # end def
 # end class
+
+
+def phred_char_to_pe(char : str, offset : int = 33) -> float:
+    # pe is error probability
+    Q = ord(char) - offset
+    return Q_to_pe(Q)
+# end def
+
+
+def Q_to_pe(Q : float) -> float:
+    return 10 ** (-Q / 10)
+# end def
+
+
+def pe_to_Q(error_prob : float):
+    return -10 * math.log10(error_prob)
+# end def
+
+
+def make_quality_dict(packet : SeqPacket) -> dict[str, float]:
+    packet_type = type(
+        next(iter(packet))
+    )
+    if packet_type == Fastq:
+        return {
+            sr.get_seq_id() : sr.average_quality()
+                for sr in packet
+        }
+    # end if
+    return {
+        sr.get_seq_id() : None for sr in packet
+    }
+# end def

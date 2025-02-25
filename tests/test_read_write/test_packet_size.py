@@ -225,6 +225,7 @@ class TestPacketSizeSumSeqLenMode:
     # end def
 
 
+    # TODO: and actual lengths of sequences are not tested!
     def test_packet_size_with_max_seq_len(self,
                                 some_plain_fasta_fpath : str):
         packet_mode = 'sum_seq_len'

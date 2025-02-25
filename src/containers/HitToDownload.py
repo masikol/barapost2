@@ -1,6 +1,7 @@
 
 from src.config.hits import SEP
 from src.util.strings import str_None_rep
+from src.containers.AlignResult import AlignResult
 
 
 class HitToDownload:
@@ -60,6 +61,19 @@ class HitToDownload:
             record_name=split_row[1],
             hit_count=int(split_row[2]), # TODO: validate int, because db is free to edit by users
             replicons_checked=replicons_checked
+        )
+    # end def
+
+
+    # TODO: test
+    @classmethod
+    def from_align_result(cls,
+                          align_result : AlignResult) -> 'HitToDownload':
+        return HitToDownload(
+            accession=align_result.hit_accession,
+            record_name=align_result.hit_name,
+            hit_count=1,
+            replicons_checked=False
         )
     # end def
 

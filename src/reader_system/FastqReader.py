@@ -22,4 +22,15 @@ class FastqReader(FileReader):
             quality=quality
         )
     # end def
+
+    def _count_records_in_curr_file(self) -> bool:
+        with self._open_gzipwise(self._curr_file_path) as input_handle:
+            line_count = sum(
+                (
+                    1 for line in input_handle.readlines()
+                )
+            )
+        # end with
+        return line_count // 4
+    # end def
 # end class
