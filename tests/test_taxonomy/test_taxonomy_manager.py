@@ -4,8 +4,8 @@ import os
 import pytest
 
 from src.filesystem import remove_bad_chars
+from src.config.taxonomy import DB_FILE_NAME
 from src.containers.SeqTaxonomy import SeqTaxonomy
-from src.config.taxonomy_config import DB_FILE_NAME
 from src.taxonomy.TaxonomyManager import TaxonomyManager
 
 

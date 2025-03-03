@@ -30,8 +30,8 @@ class FileReader(ABC):
                  n_first_skip_dict : dict = dict()):
 
         self.file_paths = file_paths
-        # TODO: catch StopIteration
-        # Or we will handle this at the arg parsing stage?
+        # Dont bothe catching StopIteration here:
+        #   we ensure it to be handled  at the arg parsing stage.
         self._curr_file_path = next(iter(file_paths))
         self._curr_file_i = -1 # TODO: ugly
 
@@ -61,8 +61,6 @@ class FileReader(ABC):
         elif max_seq_len > 0:
             self._increment_sum = lambda seq : min(self.max_seq_len, len(seq))
         else:
-            # TODO: this won't work is str (or sth, not int/float) is passed as max_seq_len
-            # Anyway, this validation will be done at the arg parsing stage
             raise ValueError(
                 f'Indalid max_seq_len: `{max_seq_len}`. It must be a positive integer or -1.'
             )
@@ -94,7 +92,7 @@ class FileReader(ABC):
             if self._check_file_end(record):
                 self._end_of_curr_file = True
                 if len(self._packet) == 0:
-                    self._reset_packet() # TODO: do we really need it here?
+                    self._reset_packet()
                     raise StopIteration
                 else:
                     packet = self._packet
@@ -152,7 +150,7 @@ class FileReader(ABC):
 
 
     # TODO: add return type hint
-    def __iter__(self):
+    def __iter__(self) -> 'FileReader':
         return self
     # end def
 
@@ -167,8 +165,8 @@ class FileReader(ABC):
         # end if
 
         if self._end_of_curr_file:
-            logging.info('Finish processing file `{}`'.format(
-                self._curr_file_path)
+            logging.info(
+                'Finish processing file `{}`'.format(self._curr_file_path)
             )
             self._wind_to_next_input_file()
             self._end_of_curr_file = False
@@ -189,9 +187,6 @@ class FileReader(ABC):
     # end def
 
     def _wind_to_next_input_file(self):
-        # TODO: this won't work if self.file_paths is a generator
-        #   It won't be a generator, anyway, so let it be so
-
         self._increment_curr_file_i()
 
         found = False
@@ -207,7 +202,6 @@ class FileReader(ABC):
                     # And if we get a StopIteration even here, then there is
                     #   nothing to read at all: all records were skipped
                     #   before first packet was made.
-                    # TODO: ugly
                     self.reader = StringIO('') # empty stream
                     return
                 # end try
@@ -242,7 +236,7 @@ class FileReader(ABC):
     # end def
 
     def _skip_n_first_records(self):
-        # TODO: set self.__end_of_curr_file here, not near _wind_to_next_input_file call!
+        # TODO: set self._end_of_curr_file here, not near _wind_to_next_input_file call!
         n_records_to_skip = self._get_n_records_to_skip()
         if n_records_to_skip <= 0:
             return
@@ -265,7 +259,6 @@ class FileReader(ABC):
         if not self._curr_file_path in self.n_first_skip_dict:
             return 0
         # end if
-        # TODO: catch ValueError: conversion to int
         return self.n_first_skip_dict[self._curr_file_path]
     # end def
 
@@ -277,7 +270,8 @@ class FileReader(ABC):
     # end def
 
 
-    # TODO: somewhat ugly but important
+    # Somewhat ugly but important.
+    #  Kernels use this method to determine whither to write.
     def get_curr_infpath(self) -> str:
         return self._curr_file_path
     # end def

@@ -7,7 +7,7 @@ from xml.etree.ElementTree import ParseError as XMLParseError
 from src.taxonomy.Errors import TaxonomyParseError
 from src.containers.SeqTaxonomy import SeqTaxonomy
 from src.network.insistent_https import insistent_https
-from src.config.taxonomy_config import RANKS_SORTED_DESCENDING
+from src.config.taxonomy import RANKS_SORTED_DESCENDING
 
 
 # TODO: don't forget to move higher to some config abstraction level

@@ -5,12 +5,12 @@ import os
 import src.filesystem as fs
 from src.containers.SeqTaxonomy import SeqTaxonomy
 from src.taxonomy.TaxonomySearcher import TaxonomySearcher
-from src.config.taxonomy_config import TAXONOMY_SEP, \
-                                       DB_FILE_NAME, \
-                                       OWN_SEQ_TAX_SEP, \
-                                       TAXONOMY_COLNAMES, \
-                                       OWN_SEQ_TAXONOMY_FMT, \
-                                       RANKS_SORTED_DESCENDING
+from src.config.taxonomy import TAXONOMY_SEP, \
+                                DB_FILE_NAME, \
+                                OWN_SEQ_TAX_SEP, \
+                                TAXONOMY_COLNAMES, \
+                                OWN_SEQ_TAXONOMY_FMT, \
+                                RANKS_SORTED_DESCENDING
 
 
 class TaxonomyManager:

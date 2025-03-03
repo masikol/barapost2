@@ -1,4 +1,6 @@
 
+import sys
+
 from src.config.hits import SEP
 from src.util.strings import str_None_rep
 from src.containers.AlignResult import AlignResult
@@ -55,11 +57,27 @@ class HitToDownload:
                 row_str.split(sep)
             )
         )
-        replicons_checked = True if split_row[3] == '1' else False
+
+        replicons_checked = True if split_row[3].strip() == '1' else False
+
+        try:
+            hits_count = int(split_row[2].strip())
+            if hits_count < 0:
+                raise ValueError
+            # end if
+        except ValueError as err:
+            logging.critical(
+                'Error: cannot parse hit count for the line with accession {}'. \
+                    .format(split_row[0])
+            )
+            logging.critical(str(err))
+            sys.exit(1)
+        # end try
+
         return HitToDownload(
-            accession=split_row[0],
-            record_name=split_row[1],
-            hit_count=int(split_row[2]), # TODO: validate int, because db is free to edit by users
+            accession=split_row[0].strip(),
+            record_name=split_row[1].strip(),
+            hit_count=hits_count,
             replicons_checked=replicons_checked
         )
     # end def

@@ -3,10 +3,10 @@ from typing import Sequence
 from functools import reduce
 
 from src.util.strings import str_None_rep
-from src.config.taxonomy_config import TAXONOMY_SEP, \
-                                       OWN_SEQ_TAX_SEP, \
-                                       TAXONOMY_COLNAMES, \
-                                       RANKS_SORTED_DESCENDING
+from src.config.taxonomy import TAXONOMY_SEP, \
+                                OWN_SEQ_TAX_SEP, \
+                                TAXONOMY_COLNAMES, \
+                                RANKS_SORTED_DESCENDING
 
 
 class SeqTaxonomy:

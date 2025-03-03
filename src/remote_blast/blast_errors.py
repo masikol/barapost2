@@ -4,7 +4,6 @@ from typing import TypeAlias
 
 action_code : TypeAlias = int
 
-# ACTION_OK_RETIEVE       : action_code = 0  # TODO: remove, if ok, no exception
 ACTION_NO_HITS          : action_code = 1
 ACTION_RESEND           : action_code = 2
 ACTION_SPLIT_AND_RESEND : action_code = 3

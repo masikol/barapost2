@@ -6,7 +6,7 @@ import http.client
 import urllib.parse
 
 from src.network.RequestFailError import RequestFailError
-from src.config.network_config import MAX_ATTEMPT_COUNT, DEFAULT_TIMEOUT
+from src.config.network import MAX_ATTEMPT_COUNT, DEFAULT_TIMEOUT
 
 
 # TODO: don't forget to move higher to some config abstraction level
