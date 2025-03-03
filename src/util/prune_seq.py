@@ -1,12 +1,12 @@
 
 from src.containers.Fasta import Fasta
 from src.containers.Fastq import Fastq
-from src.containers.RealSeqRecord import RealSeqRecord
+from src.containers.SeqRecord import SeqRecord
 
 
 # TODO: test
-def prune_seq(seq_record : RealSeqRecord,
-              new_seq_len : int) -> RealSeqRecord:
+def prune_seq(seq_record : SeqRecord,
+              new_seq_len : int) -> SeqRecord:
     # TODO: seq_record gets modified it!
 
     old_seq_len = len(seq_record.get_seq())
@@ -21,7 +21,7 @@ def prune_seq(seq_record : RealSeqRecord,
         seq_record.quality = _prune_string(seq_record.quality, new_seq_len)
     else:
         raise TypeError(
-            'Invalid RealSeqRecord type: `{}`'.format(seq_record)
+            'Invalid SeqRecord type: `{}`'.format(seq_record)
         )
     # end if
     return seq_record

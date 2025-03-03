@@ -11,11 +11,11 @@ from src.containers.Fastq import Fastq, \
 from src.args.ProberArgs import ProberArgs
 from src.hits.HitManager import HitManager
 import src.remote_blast.blast_errors as berr
-from src.containers.SeqRecord import SeqRecord
+from src.containers.HTSRecord import HTSRecord
 from src.containers.AlignResult import AlignResult
 from src.reader_system.FileReader import FileReader
 from src.remote_blast.RemoteBlast import RemoteBlast
-from src.containers.RealSeqRecord import RealSeqRecord
+from src.containers.SeqRecord import SeqRecord
 from src.taxonomy.TaxonomyManager import TaxonomyManager
 from src.reader_system.ReaderWrapper import ReaderWrapper
 from src.util.BarapostWorkDirManager import BarapostWorkDirManager
@@ -34,7 +34,7 @@ ACTION_ARCHIVE : ActionCode = '3'
 ACTION_EXIT    : ActionCode = '4'
 
 
-SeqPacket : TypeAlias = Sequence[RealSeqRecord]
+SeqPacket : TypeAlias = Sequence[SeqRecord]
 AlignResultDict : TypeAlias = dict[str, Sequence[AlignResult]]
 
 
@@ -450,7 +450,7 @@ class ProberKernel:
         return new_packet_size
     # end def
 
-    def _calculate_half_seq_len(self, seq_record : SeqRecord) -> int:
+    def _calculate_half_seq_len(self, seq_record : HTSRecord) -> int:
         old_seq_len = len(seq_record.get_seq())
         new_seq_len = old_seq_len // 2
         if old_seq_len % 2 != 0:

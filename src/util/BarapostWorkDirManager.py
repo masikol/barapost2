@@ -9,7 +9,7 @@ from typing import Sequence, TypeAlias
 
 import src.filesystem as fs
 from src.time import humane_time
-from src.containers.SeqRecord import SeqRecord
+from src.containers.HTSRecord import HTSRecord
 from src.containers.Fastq import make_quality_dict
 
 # TODO: don't forget to move higher to some config abstraction level
@@ -17,7 +17,7 @@ logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-SeqPacket : TypeAlias = Sequence[SeqRecord]
+SeqPacket : TypeAlias = Sequence[HTSRecord]
 
 
 # TODO: test

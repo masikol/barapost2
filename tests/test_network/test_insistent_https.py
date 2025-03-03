@@ -10,7 +10,7 @@ from src.network.RequestFailError import RequestFailError
 @pytest.fixture
 def correct_params() -> dict:
     return {
-        'server'          : 'ncbi.nlm.nih.gov',
+        'server'          : 'www.ncbi.nlm.nih.gov',
         'server_path'     : '/nuccore/CP045701.2',
     }
 # end def
@@ -18,7 +18,7 @@ def correct_params() -> dict:
 @pytest.fixture
 def correct_params_with_args() -> dict:
     return {
-        'server'          : 'ncbi.nlm.nih.gov',
+        'server'          : 'www.ncbi.nlm.nih.gov',
         'server_path'     : '/nuccore/CP045701.2',
         'args'            : {'report': 'gilist', 'format': 'text'},
     }
@@ -27,7 +27,7 @@ def correct_params_with_args() -> dict:
 @pytest.fixture
 def incorrect_params1() -> dict:
     return {
-        'server'          : 'ncbiERROR.nlm.nih.gov',
+        'server'          : 'www.ncbiERROR.nlm.nih.gov',
         'server_path'     : '/nuccore/CP045701.2',
     }
 # end def
@@ -36,7 +36,7 @@ def incorrect_params1() -> dict:
 @pytest.fixture
 def incorrect_params2() -> dict:
     return {
-        'server'          : 'ncbi.nlm.nih.gov',
+        'server'          : 'www.ncbi.nlm.nih.gov',
         'server_path'     : '/nuccoreERROR/CP045701.2',
     }
 # end def
@@ -51,11 +51,12 @@ class TestInsistentHttpsGet:
         try:
             insistent_https(
                 server=correct_params['server'],
-                server_path=correct_params['server_path'],
+                server_path=correct_params['server_path']
             )
         except RequestFailError as err:
             err_msg = '`insistent_https` raised an exception {}'.format(err)
             assert False, err_msg
+        # end try
     # end def
 
     def test_correct_params_with_args(self, correct_params_with_args: dict):
@@ -63,11 +64,12 @@ class TestInsistentHttpsGet:
             insistent_https(
                 server=correct_params_with_args['server'],
                 server_path=correct_params_with_args['server_path'],
-                args=correct_params_with_args['args'],
+                args=correct_params_with_args['args']
             )
         except RequestFailError as err:
             err_msg = '`insistent_https` raised an exception {}'.format(err)
             assert False, err_msg
+        # end try
     # end def
 
 

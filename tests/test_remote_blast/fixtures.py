@@ -15,7 +15,7 @@ def read_first_fasta_seq(input_fpath : str) -> Fasta:
         file_paths=[input_fpath],
         packet_size=1,
         probing_batch_size=1,
-        mode='seq_count'
+        packet_mode='seq_count'
     )
     with reader_wrapper as input_handle:
         for container_packet in input_handle:

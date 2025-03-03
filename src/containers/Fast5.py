@@ -1,12 +1,10 @@
 
-# TODO: remove
-# from h5py import File
 from ont_fast5_api.fast5_read import Fast5Read
 
-from src.containers.SeqRecord import SeqRecord
+from src.containers.HTSRecord import HTSRecord
 
 
-class Fast5(SeqRecord):
+class Fast5(HTSRecord):
 
     __slots__ = ('read_data')
 
@@ -22,5 +20,9 @@ class Fast5(SeqRecord):
         return f'''Fast5(
     read_data={self.read_data!r},
 )'''
+    # end def
+
+    def get_seq_id(self) -> str:
+        return self.read_data.get_read_id()
     # end def
 # end class

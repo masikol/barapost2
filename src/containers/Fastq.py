@@ -4,17 +4,17 @@ import logging
 import statistics
 from typing import Sequence, TypeAlias
 
-from src.containers.RealSeqRecord import RealSeqRecord
+from src.containers.SeqRecord import SeqRecord
 
 
-SeqPacket : TypeAlias = Sequence[RealSeqRecord]
+SeqPacket : TypeAlias = Sequence[SeqRecord]
 
 
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class Fastq(RealSeqRecord):
+class Fastq(SeqRecord):
 
     __slots__ = ('header', 'seq', 'plus_line', 'quality', 'offset')
 
@@ -29,6 +29,7 @@ class Fastq(RealSeqRecord):
         self.plus_line = plus_line
         self.quality = quality
 
+        # TODO: stupid. Why this restriction? Just set any offset!
         if offset not in (33, 64):
             logger.warning(f'Unexpected offset: `{offset}`. Setting offset to 33.')
             self.offset = 33

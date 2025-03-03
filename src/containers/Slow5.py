@@ -1,8 +1,8 @@
 
-from src.containers.SeqRecord import SeqRecord
+from src.containers.HTSRecord import HTSRecord
 
 # TODO: S/BLOW5 is to be implemented later
-class Slow5(SeqRecord):
+class Slow5(HTSRecord):
 
     __slots__ = ('record')
 

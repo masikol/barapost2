@@ -100,7 +100,7 @@ class TestPacketSizeSeqCountMode:
 
         n = 3
         n_first_skip_dict = {
-            os.path.basename(some_plain_fasta_fpath) : n,
+            some_plain_fasta_fpath : n,
         }
 
         reader = ReaderWrapper(

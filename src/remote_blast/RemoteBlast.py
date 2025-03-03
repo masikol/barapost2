@@ -9,7 +9,7 @@ from typing import Sequence, TypeAlias
 
 from src.time import humane_time
 import src.remote_blast.blast_errors as berr
-from src.containers.SeqRecord import SeqRecord
+from src.containers.HTSRecord import HTSRecord
 from src.containers.AlignResult import AlignResult
 from src.util.simplify_read_id import simplify_read_id
 from src.network.insistent_https import insistent_https
@@ -37,7 +37,7 @@ class RemoteBlast:
     # end def
 
 
-    def submit_remote_blast(self, packet : Sequence[SeqRecord]) -> (str, int):
+    def submit_remote_blast(self, packet : Sequence[HTSRecord]) -> (str, int):
         request_data = self._make_BLAST_PUT_request_data(packet=packet)
         submission_response = insistent_https(
             server=SERVER,
@@ -51,7 +51,7 @@ class RemoteBlast:
     # end def
 
     def _make_BLAST_PUT_request_data(self,
-                                     packet : Sequence[SeqRecord]) -> dict:
+                                     packet : Sequence[HTSRecord]) -> dict:
         # Function configures the submissoin request to BLAST server.
         # See https://blast.ncbi.nlm.nih.gov/doc/blast-help/urlapi.html#urlapi
         #

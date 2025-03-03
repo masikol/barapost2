@@ -36,4 +36,9 @@ class Fast5Reader(FileReader):
     def close(self) -> None: # Do not close FAST5 files till write it
         self.reader.close()
     # end def
+
+    def _count_records_in_curr_file(self) -> int:
+        f5 = get_fast5_file(self._curr_file_path, mode='r')
+        return len(f5.get_read_ids())
+    # end def
 # end class

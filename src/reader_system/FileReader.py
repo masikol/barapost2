@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from typing import Generator, Callable, Sequence, MutableSequence
 
 import src.filesystem as fs
-from src.containers.SeqRecord import SeqRecord
+from src.containers.HTSRecord import HTSRecord
 
 
 # TODO: don't forget to move higher to some config abstraction level
@@ -70,23 +70,23 @@ class FileReader(ABC):
     # end def
 
     @abstractmethod
-    def _read_single_record(self) -> SeqRecord:
+    def _read_single_record(self) -> HTSRecord:
         raise NotImplementedError()
     # end def
 
     @abstractmethod
-    def _check_file_end(self, record : SeqRecord) -> bool:
+    def _check_file_end(self, record : HTSRecord) -> bool:
         raise NotImplementedError()
     # end def
 
     # TODO: test
     @abstractmethod
-    def _count_records_in_curr_file(self) -> bool:
+    def _count_records_in_curr_file(self) -> int:
         raise NotImplementedError()
     # end def
 
     def _make_conditional_packet(self,
-                                 condition : Callable) -> MutableSequence[SeqRecord]:
+                                 condition : Callable) -> MutableSequence[HTSRecord]:
 
         while condition():
             record = self._read_single_record()
@@ -123,13 +123,13 @@ class FileReader(ABC):
     # end def
 
 
-    def _make_seq_count_packet(self) -> MutableSequence[SeqRecord]:
+    def _make_seq_count_packet(self) -> MutableSequence[HTSRecord]:
         return self._make_conditional_packet(
             condition=self._seq_count_stop_condition
         )
     # end def
 
-    def _make_sum_seq_len_packet(self) -> MutableSequence[SeqRecord]:
+    def _make_sum_seq_len_packet(self) -> MutableSequence[HTSRecord]:
         return self._make_conditional_packet(
             condition=self._sum_seq_len_stop_condition
         )
@@ -156,7 +156,7 @@ class FileReader(ABC):
         return self
     # end def
 
-    def __next__(self) -> Generator[MutableSequence[SeqRecord], None, None]:
+    def __next__(self) -> Generator[MutableSequence[HTSRecord], None, None]:
         stop = self.probing_batch_size != -1 \
                and self._n_records_read_total >= self.probing_batch_size
         if stop:

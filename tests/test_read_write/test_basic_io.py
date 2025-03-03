@@ -4,7 +4,7 @@ from typing import Sequence
 
 import pytest
 
-from src.containers.SeqRecord import SeqRecord
+from src.containers.HTSRecord import HTSRecord
 from src.reader_system.ReaderWrapper import ReaderWrapper
 from src.writer_system.WriterWrapper import WriterWrapper
 from src.containers.ClassifContainer import ClassifContainer
@@ -284,7 +284,7 @@ class TestBasicIO:
 # end class
 
 
-def _mock_classify(seq_packet : Sequence[SeqRecord]) -> Sequence[ClassifContainer]:
+def _mock_classify(seq_packet : Sequence[HTSRecord]) -> Sequence[ClassifContainer]:
     return tuple(
         map(
             _mock_classify_single,
@@ -293,7 +293,7 @@ def _mock_classify(seq_packet : Sequence[SeqRecord]) -> Sequence[ClassifContaine
     )
 # end def
 
-def _mock_classify_single(seq_record : SeqRecord) -> ClassifContainer:
+def _mock_classify_single(seq_record : HTSRecord) -> ClassifContainer:
     return ClassifContainer(
         record=seq_record,
         label='test'

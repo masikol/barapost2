@@ -1,8 +1,8 @@
 
-from src.containers.RealSeqRecord import RealSeqRecord
+from src.containers.SeqRecord import SeqRecord
 
 
-class Fasta(RealSeqRecord):
+class Fasta(SeqRecord):
 
     __slots__ = ('header', 'seq')
 

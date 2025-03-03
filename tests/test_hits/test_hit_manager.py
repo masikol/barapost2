@@ -6,6 +6,7 @@ import shutil
 import pytest
 
 from src.hits.HitManager import HitManager
+from src.containers.AlignResult import AlignResult
 from src.containers.HitToDownload import HitToDownload
 from src.config.hits import DB_FILE_NAME, SEP, COMMENT_CHAR
 
@@ -58,6 +59,23 @@ def some_hit() -> HitToDownload:
     return HitToDownload(
         accession=SOME_ACCESSION,
         record_name=SOME_RECORD_NAME
+    )
+# end def
+
+
+@pytest.fixture
+def some_align_result() -> AlignResult:
+    return AlignResult(
+        query_id='query_seq',
+        hit_name=SOME_RECORD_NAME,
+        hit_accession=SOME_ACCESSION,
+        query_length=1000,
+        alignment_length=1000,
+        identity=999,
+        gaps=0,
+        evalue=0.0,
+        avg_quality=6.8,
+        accuracy=98.7
     )
 # end def
 
@@ -118,17 +136,17 @@ class TestHitManager:
 
     def test_add_hit(self,
                      non_empty_classif_dir_path : str,
-                     some_hit : HitToDownload):
+                     some_align_result : AlignResult):
         hit_manager = HitManager(non_empty_classif_dir_path)
-        assert not some_hit.accession in hit_manager.hit_dict.keys(), \
-            'Invalid fixture: some_hit.accession is in hit_manager.hit_dict.keys()'
+        assert not some_align_result.hit_accession in hit_manager.hit_dict.keys(), \
+            'Invalid fixture: some_align_result.hit_accession is in hit_manager.hit_dict.keys()'
 
         before_len = len(hit_manager.hit_dict)
         before_keys = frozenset(
             hit_manager.hit_dict.keys()
         )
 
-        hit_manager.add_hit(some_hit)
+        hit_manager.add_hit(some_align_result)
         # TODO: test _increment_hit here !
 
         after_len = len(hit_manager.hit_dict)
@@ -137,7 +155,7 @@ class TestHitManager:
         )
 
         assert after_len == before_len + 1
-        assert after_keys == before_keys | frozenset((some_hit.accession,))
+        assert after_keys == before_keys | frozenset((some_align_result.hit_accession,))
     # end def
 
 

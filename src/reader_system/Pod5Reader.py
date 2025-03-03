@@ -30,4 +30,11 @@ class Pod5Reader(FileReader):
     def close(self) -> None:
         pass
     # end def
+
+    def _count_records_in_curr_file(self) -> int:
+        with DatasetReader(self._curr_file_path) as file:
+            num_reads = self.reader.num_reads
+        # end with
+        return num_reads
+    # end def
 # end class

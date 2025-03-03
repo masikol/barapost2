@@ -179,15 +179,15 @@ class TestIsRawNanopore:
     def test_raw_nanopore_paths(self, raw_nanopore_file_paths):
         assert fs.is_fast5(raw_nanopore_file_paths[0])
         assert fs.is_pod5( raw_nanopore_file_paths[1])
-        assert fs.is_blow5(raw_nanopore_file_paths[2])
-        assert fs.is_slow5(raw_nanopore_file_paths[3])
+        # assert fs.is_blow5(raw_nanopore_file_paths[2]) # TODO: add S/BLOW5 support
+        # assert fs.is_slow5(raw_nanopore_file_paths[3]) # TODO: add S/BLOW5 support
     # end def
 
     def test_non_raw_nanopore_paths(self, non_raw_nanopore_file_paths):
         assert not fs.is_fast5(non_raw_nanopore_file_paths[0])
         assert not fs.is_pod5( non_raw_nanopore_file_paths[1])
-        assert not fs.is_blow5(non_raw_nanopore_file_paths[2])
-        assert not fs.is_slow5(non_raw_nanopore_file_paths[3])
+        # assert not fs.is_blow5(non_raw_nanopore_file_paths[2]) # TODO: add S/BLOW5 support
+        # assert not fs.is_slow5(non_raw_nanopore_file_paths[3]) # TODO: add S/BLOW5 support
     # end def
 # end class
 

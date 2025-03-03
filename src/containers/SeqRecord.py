@@ -1,11 +1,14 @@
 
-class SeqRecord:
+from src.containers.HTSRecord import HTSRecord
+
+
+class SeqRecord(HTSRecord):
+
     def __init__(self):
         raise NotImplementedError()
     # end def
 
-    # # TODO: implement it in Fast5 and Pod5
-    # def get_seq_id(self) -> str:
-    #     raise NotImplementedError()
-    # # end def
+    def get_seq(self) -> str:
+        return self.seq
+    # end def
 # end class

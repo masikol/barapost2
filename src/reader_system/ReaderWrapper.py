@@ -4,7 +4,7 @@ import logging
 from typing import Generator, Sequence, MutableSequence
 
 import src.filesystem as fs
-from src.containers.SeqRecord import SeqRecord
+from src.containers.HTSRecord import HTSRecord
 
 from src.reader_system.FileReader  import FileReader
 from src.reader_system.FastaReader import FastaReader
@@ -143,7 +143,7 @@ class ReaderWrapper(object):
         )
     # end def
 
-    def __next__(self) -> Generator[MutableSequence[SeqRecord], None, None]:
+    def __next__(self) -> Generator[MutableSequence[HTSRecord], None, None]:
         return next(self.reader)
     # end def
 
