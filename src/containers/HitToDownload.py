@@ -67,7 +67,7 @@ class HitToDownload:
             # end if
         except ValueError as err:
             logging.critical(
-                'Error: cannot parse hit count for the line with accession {}'. \
+                'Error: cannot parse hit count for the line with accession {}' \
                     .format(split_row[0])
             )
             logging.critical(str(err))

@@ -110,6 +110,30 @@ def a_path_with_bad_chars() -> str:
 # end def
 
 
+@pytest.fixture
+def real_plain_fpath() -> str:
+    return os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'test_read_write',
+        'data',
+        'test_input',
+        'some_seqs.fasta'
+    )
+# end def
+
+
+@pytest.fixture
+def real_gziped_fpath() -> str:
+    return os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'test_read_write',
+        'data',
+        'test_input',
+        'some_seqs.fasta.gz'
+    )
+# end def
+
+
 # === Test classes ===
 
 class TestIsFasta:
@@ -199,5 +223,37 @@ class TestRemoveBadChars:
         for char in fs._BAD_CHARS:
             assert not char in processed_str
         # end for
+    # end def
+# end class
+
+
+class TestGzip:
+
+    def test_is_gzipped_plain_file(self,
+                                   fasta_file_paths_plain : Sequence[str]):
+        file_path = next(iter(fasta_file_paths_plain))
+        assert fs.is_gzipped(file_path) == False
+    # end def
+
+    def test_is_gzipped_gzipped_file(self,
+                                     fasta_file_paths_gzipped : Sequence[str]):
+        file_path = next(iter(fasta_file_paths_gzipped))
+        assert fs.is_gzipped(file_path) == True
+    # end def
+
+    def test_stop_if_bad_gzip_file_gzipped(self,
+                                           real_gziped_fpath : str):
+        try:
+            fs.stop_if_bad_gzip_file(real_gziped_fpath)
+        except SystemExit:
+            assert False, 'test_test_gzip_file_ok_gzipped caught SystemExit'
+        # end try
+    # end def
+
+    def test_stop_if_bad_gzip_file_plain(self,
+                                         real_plain_fpath : str):
+        with pytest.raises(SystemExit):
+            fs.stop_if_bad_gzip_file(real_plain_fpath)
+        # end with
     # end def
 # end class

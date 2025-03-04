@@ -6,18 +6,17 @@ from typing import Sequence, TypeAlias
 
 import src.filesystem as fs
 from src.util.prune_seq import prune_seq
-from src.containers.Fastq import Fastq, \
-                                 make_quality_dict
 from src.args.ProberArgs import ProberArgs
 from src.hits.HitManager import HitManager
 import src.remote_blast.blast_errors as berr
 from src.containers.HTSRecord import HTSRecord
+from src.containers.SeqRecord import SeqRecord
 from src.containers.AlignResult import AlignResult
 from src.reader_system.FileReader import FileReader
 from src.remote_blast.RemoteBlast import RemoteBlast
-from src.containers.SeqRecord import SeqRecord
 from src.taxonomy.TaxonomyManager import TaxonomyManager
 from src.reader_system.ReaderWrapper import ReaderWrapper
+from src.containers.Fastq import Fastq, make_quality_dict
 from src.util.BarapostWorkDirManager import BarapostWorkDirManager
 
 

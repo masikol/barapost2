@@ -21,7 +21,8 @@ class ProberArgs:
                  packet_size : int = 100,
                  max_seq_len : int = None,
                  blast_algorithm : str = 'megaBlast',
-                 organisms : Sequence[int] = list()):
+                 organisms : Sequence[int] = list(),
+                 phred_offset : int = 33):
         self.input_fpaths       = input_fpaths
         self.output_dirpath     = output_dirpath
         self.probing_batch_size = probing_batch_size
@@ -30,6 +31,7 @@ class ProberArgs:
         self.max_seq_len        = max_seq_len
         self.blast_algorithm    = blast_algorithm
         self.organisms          = organisms
+        self.phred_offset       = phred_offset
     # end def
 
 # end class

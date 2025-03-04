@@ -1,8 +1,14 @@
 
 import os
+import sys
 import gzip
 import glob
 import shutil
+import logging
+
+# TODO: don't forget to move higher to some config abstraction level
+logging.basicConfig(level = logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 FASTA_EXTENSIONS = {
@@ -46,8 +52,24 @@ def is_fastq(file_path : str) -> bool:
 
 
 def is_gzipped(file_path : str) -> bool:
-    # TODO: check GZip file validity
-    return file_path.endswith('.gz')
+    if not file_path.endswith('.gz'):
+        return False
+    # end if
+    return True
+# end def
+
+
+# TODO: call this on arg parsing stage
+def stop_if_bad_gzip_file(file_path : str):
+    try:
+        with gzip.open(file_path, 'rt') as input_handle:
+            input_handle.readline()
+        # end with
+    except gzip.BadGzipFile as err:
+        logging.critical('Error: bad gzip file: `{}`'.format(file_path))
+        logging.critical(str(err))
+        sys.exit(1)
+    # end try
 # end def
 
 

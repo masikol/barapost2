@@ -12,7 +12,7 @@ class FastqWriter(FileWriter):
                              out_file_handle : TextIO):
         out_file_handle.write(f'@{sec_record.header}\n')
         out_file_handle.write(f'{sec_record.seq}\n')
-        out_file_handle.write(f'{sec_record.plus_line}\n')
+        out_file_handle.write(f'{sec_record.comment}\n')
         out_file_handle.write(f'{sec_record.quality}\n')
     # end def
 # end class

@@ -1,9 +1,30 @@
 
+from typing import Sequence
+
 from src.reader_system.FileReader import FileReader
 from src.containers.Fastq import Fastq
 
 
 class FastqReader(FileReader):
+
+    def __init__(self,
+                 file_paths : Sequence[str],
+                 packet_mode : str = 'seq_count',
+                 packet_size : int = 1,
+                 probing_batch_size : int = -1,
+                 max_seq_len : int = -1,
+                 n_first_skip_dict : dict = dict(),
+                 phred_offset : int = 33):
+        super().__init__(
+            file_paths,
+            packet_mode,
+            packet_size,
+            probing_batch_size,
+            max_seq_len,
+            n_first_skip_dict
+        )
+        self.phred_offset = phred_offset
+    # end def
 
     def _check_file_end(self, record : Fastq) -> bool:
         return record.header == ''
@@ -12,14 +33,15 @@ class FastqReader(FileReader):
     def _read_single_record(self) -> Fastq:
         header    = self.reader.readline().strip().lstrip('@')
         seq       = self.reader.readline().strip()
-        plus_line = self.reader.readline().strip()
+        comment = self.reader.readline().strip()
         quality   = self.reader.readline().strip()
 
         return Fastq(
             header=header,
             seq=seq,
-            plus_line=plus_line,
-            quality=quality
+            comment=comment,
+            quality=quality,
+            phred_offset=self.phred_offset
         )
     # end def
 

@@ -1,4 +1,4 @@
 
 SEP = '\t'
 COMMENT_CHAR = '#'
-DB_FILE_NAME = 'hits_to_download.tsv'
+DB_FILE_NAME = 'seq_db_list.tsv'

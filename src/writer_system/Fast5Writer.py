@@ -14,7 +14,7 @@ class Fast5Writer(FileWriter):
     def _write_single_record(self,
                              seq_record : Fast5,
                              out_file_handle : MultiFast5File):
-        out_file_handle.add_existing_read(seq_record.read_data)
+        out_file_handle.add_existing_read(seq_record.record)
     # end def
 
     def _get_out_file_path(self, label : str, index : str) -> str:

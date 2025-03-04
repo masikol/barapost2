@@ -6,23 +6,23 @@ from src.containers.HTSRecord import HTSRecord
 
 class Fast5(HTSRecord):
 
-    __slots__ = ('read_data')
+    __slots__ = ('record')
 
-    def __init__(self, read_data : Fast5Read):
-        self.read_data = read_data
+    def __init__(self, record : Fast5Read):
+        self.record = record
     # end def
 
     def __str__(self):
-        return f'''read_data : {self.read_data}.\n'''
+        return f'''record : {self.record}.\n'''
     # end def
 
     def __repr__(self):
         return f'''Fast5(
-    read_data={self.read_data!r},
+    record={self.record!r},
 )'''
     # end def
 
     def get_seq_id(self) -> str:
-        return self.read_data.get_read_id()
+        return self.record.get_read_id()
     # end def
 # end class

@@ -21,7 +21,7 @@ class Fast5Reader(FileReader):
             raise
         # end try
         return Fast5(
-            read_data=self.reader.get_read(read_id)
+            record=self.reader.get_read(read_id)
         )
     # end def
 

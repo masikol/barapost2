@@ -29,7 +29,8 @@ class ReaderWrapper(object):
                  packet_size : int = 1,
                  probing_batch_size : int = -1,
                  max_seq_len : int = -1,
-                 n_first_skip_dict : dict = dict()):
+                 n_first_skip_dict : dict = dict(),
+                 phred_offset : int = 33):
 
         # TODO: we'll handle this at the arg parsing stage
         # if not os.path.isfile(file_path):
@@ -45,6 +46,7 @@ class ReaderWrapper(object):
         self.packet_size        = packet_size
         self.probing_batch_size = probing_batch_size
         self.max_seq_len        = max_seq_len
+        self.phred_offset       = phred_offset
 
         self._validate_positive_integer(self.packet_size, 'packet_size')
         self._validate_positive_integer(
@@ -92,7 +94,8 @@ class ReaderWrapper(object):
                 packet_size=self.packet_size,
                 probing_batch_size=self.probing_batch_size,
                 max_seq_len=self.max_seq_len,
-                n_first_skip_dict=n_first_skip_dict
+                n_first_skip_dict=n_first_skip_dict,
+                phred_offset=phred_offset
             )
         elif fs.is_fast5(curr_file_path):
             self.reader = Fast5Reader(

@@ -38,7 +38,6 @@ seq: {seq_concise}.\n'''
         )
     # end def
 
-    # TODO: test
     def get_seq_id(self) -> str:
         return self.header.partition(' ')[0]
     # end def

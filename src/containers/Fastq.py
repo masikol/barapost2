@@ -2,6 +2,7 @@
 import math
 import logging
 import statistics
+from functools import partial
 from typing import Sequence, TypeAlias
 
 from src.containers.SeqRecord import SeqRecord
@@ -16,32 +17,39 @@ logger = logging.getLogger(__name__)
 
 class Fastq(SeqRecord):
 
-    __slots__ = ('header', 'seq', 'plus_line', 'quality', 'offset')
+    __slots__ = (
+        'header',
+        'seq',
+        'comment',
+        'quality',
+        'phred_offset',
+        'average_quality',
+    )
 
     def __init__(self,
                  header : str,
                  seq : str,
-                 plus_line : str,
+                 comment : str,
                  quality : str,
-                 offset : int = 33):
+                 phred_offset : int = 33):
         self.header = header
         self.seq = seq
-        self.plus_line = plus_line
+        self.comment = comment
         self.quality = quality
-
-        # TODO: stupid. Why this restriction? Just set any offset!
-        if offset not in (33, 64):
-            logger.warning(f'Unexpected offset: `{offset}`. Setting offset to 33.')
-            self.offset = 33
-        else:
-            self.offset = offset
-        # end if
+        self.phred_offset = phred_offset # arg parsing ensures that phred_offset is valid
+        self._average_quality = None
     # end def
 
-    def average_quality(self) -> float:
-        # TODO: use phred offset here!!!
+    def get_average_quality(self) -> float:
+        if self._average_quality is None:
+            self._average_quality = self._calc_average_quality()
+        # end def
+        return self._average_quality
+    # end def
+
+    def _calc_average_quality(self) -> float:
         avg_error_prob = statistics.mean(
-            map(phred_char_to_pe, self.quality)
+            map(self.phred_char_to_pe, self.quality)
         )
         return round(
             pe_to_Q(avg_error_prob),
@@ -49,12 +57,19 @@ class Fastq(SeqRecord):
         )
     # end def
 
+    def phred_char_to_pe(self, 
+        char : str) -> float:
+        # pe is error probability
+        Q = ord(char) - self.phred_offset
+        return Q_to_pe(Q)
+    # end def
+
     def __str__(self):
         seq_concise     = self._get_consice_str(self.seq)
         quality_concise = self._get_consice_str(self.quality)
         return f'''header: {self.header},
 seq: {seq_concise},
-plus_line: {self.plus_line},
+comment: {self.comment},
 quality: {quality_concise}.\n'''
     # end def
 
@@ -64,7 +79,7 @@ quality: {quality_concise}.\n'''
         return f'''Fastq(
     header={self.header!r}, 
     sequence={seq_concise!r}, 
-    plus_line={self.plus_line!r}, 
+    comment={self.comment!r}, 
     quality={quality_concise!r}
 )'''
     # end def
@@ -82,27 +97,19 @@ quality: {quality_concise}.\n'''
         )
     # end def
 
-    # TODO: test
     def get_seq_id(self) -> str:
         return self.header.partition(' ')[0]
     # end def
 # end class
 
 
-def phred_char_to_pe(char : str, offset : int = 33) -> float:
-    # pe is error probability
-    Q = ord(char) - offset
-    return Q_to_pe(Q)
-# end def
-
-
 def Q_to_pe(Q : float) -> float:
-    return 10 ** (-Q / 10)
+    return 10.0 ** (-Q / 10.0)
 # end def
 
 
 def pe_to_Q(error_prob : float):
-    return -10 * math.log10(error_prob)
+    return -10.0 * math.log10(error_prob)
 # end def
 
 
@@ -112,7 +119,7 @@ def make_quality_dict(packet : SeqPacket) -> dict[str, float]:
     )
     if packet_type == Fastq:
         return {
-            sr.get_seq_id() : sr.average_quality()
+            sr.get_seq_id() : sr.get_average_quality()
                 for sr in packet
         }
     # end if
