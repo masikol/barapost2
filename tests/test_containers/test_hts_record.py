@@ -12,24 +12,24 @@ from src.containers.Fast5 import Fast5
 
 
 RANDOM_HEADER = 'pretty_woman'
+RANDOM_SEQ    = 'CATGATGCTAGC'
 
 
 @pytest.fixture
 def some_fasta_record() -> Fasta:
     return Fasta(
         header=RANDOM_HEADER,
-        seq='CATGATGCTAGC'
+        seq=RANDOM_SEQ
     )
 # end def
 
 @pytest.fixture
 def some_fastq_record() -> Fasta:
-    seq = 'CATGATGCTAGC'
     return Fastq(
         header=RANDOM_HEADER,
-        seq=seq,
+        seq=RANDOM_SEQ,
         comment='+',
-        quality='7' * len(seq)
+        quality='7' * len(RANDOM_SEQ)
     )
 # end def
 
