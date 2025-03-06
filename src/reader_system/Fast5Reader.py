@@ -16,13 +16,11 @@ class Fast5Reader(FileReader):
         # TODO: is this really more effective than
         #   just iterating over get_reads()?
         try:
-            read_id = next(self.reader_iterator).read_id
+            record = next(self.reader_iterator)
         except StopIteration:
             raise
         # end try
-        return Fast5(
-            record=self.reader.get_read(read_id)
-        )
+        return Fast5(record=record)
     # end def
 
 
