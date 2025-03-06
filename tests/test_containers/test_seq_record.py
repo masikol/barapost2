@@ -16,7 +16,7 @@ def some_fasta_record() -> Fasta:
 # end def
 
 @pytest.fixture
-def some_fastq_record() -> Fasta:
+def some_fastq_record() -> Fastq:
     return Fastq(
         header='some_seq',
         seq=RANDOM_SEQ,

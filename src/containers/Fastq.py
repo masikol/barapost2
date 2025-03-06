@@ -49,7 +49,7 @@ class Fastq(SeqRecord):
 
     def _calc_average_quality(self) -> float:
         avg_error_prob = statistics.mean(
-            map(self.phred_char_to_pe, self.quality)
+            map(self._phred_char_to_pe, self.quality)
         )
         return round(
             pe_to_Q(avg_error_prob),
@@ -57,8 +57,7 @@ class Fastq(SeqRecord):
         )
     # end def
 
-    def phred_char_to_pe(self, 
-        char : str) -> float:
+    def _phred_char_to_pe(self, char : str) -> float:
         # pe is error probability
         Q = ord(char) - self.phred_offset
         return Q_to_pe(Q)
