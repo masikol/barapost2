@@ -83,7 +83,6 @@ class HitToDownload:
     # end def
 
 
-    # TODO: test
     @classmethod
     def from_align_result(cls,
                           align_result : AlignResult) -> 'HitToDownload':

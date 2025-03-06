@@ -2,6 +2,7 @@
 import pytest
 
 from src.config.hits import SEP
+from src.containers.AlignResult import AlignResult
 from src.containers.HitToDownload import HitToDownload
 
 
@@ -16,6 +17,22 @@ def some_hit() -> HitToDownload:
         record_name=SOME_RECORD_NAME,
         hit_count=2,
         replicons_checked=False
+    )
+# end def
+
+@pytest.fixture
+def some_align_result() -> AlignResult:
+    return AlignResult(
+        query_id='query_seq',
+        hit_name=SOME_RECORD_NAME,
+        hit_accession=SOME_ACCESSION,
+        query_length=1000,
+        alignment_length=1000,
+        identity=999,
+        gaps=0,
+        evalue=0.0,
+        avg_quality=6.8,
+        accuracy=98.7
     )
 # end def
 
@@ -74,5 +91,14 @@ class TestHitToDownload:
         observed = some_hit.hit_count
 
         assert observed == expected
+    # end def
+
+    def test_from_align_result(self,
+                               some_align_result : AlignResult):
+        hit = HitToDownload.from_align_result(some_align_result)
+        assert hit.accession   == SOME_ACCESSION
+        assert hit.record_name == SOME_RECORD_NAME
+        assert hit.hit_count == 1
+        assert hit.replicons_checked == False
     # end def
 # end class
