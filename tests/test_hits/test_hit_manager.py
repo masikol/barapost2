@@ -147,7 +147,6 @@ class TestHitManager:
         )
 
         hit_manager.add_hit(some_align_result)
-        # TODO: test _increment_hit here !
 
         after_len = len(hit_manager.hit_dict)
         after_keys = frozenset(
@@ -156,6 +155,7 @@ class TestHitManager:
 
         assert after_len == before_len + 1
         assert after_keys == before_keys | frozenset((some_align_result.hit_accession,))
+
     # end def
 
 
@@ -192,6 +192,20 @@ class TestHitManager:
         observed = hit_manager.hit_dict[some_accession].hit_count
 
         assert observed == expected
+    # end def
+
+
+    def test_increment_hit_new_hit(self,
+                                   non_empty_classif_dir_path : str,
+                                   some_align_result : AlignResult):
+        hit_manager = HitManager(non_empty_classif_dir_path)
+        assert not some_align_result.hit_accession in hit_manager.hit_dict.keys(), \
+            'Invalid fixture: some_align_result.hit_accession is in hit_manager.hit_dict.keys()'
+
+        hit_manager.add_hit(some_align_result)
+
+        hit = hit_manager.hit_dict[some_align_result.hit_accession]
+        assert hit.hit_count == 1
     # end def
 
 

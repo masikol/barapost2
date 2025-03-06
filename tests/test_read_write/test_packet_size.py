@@ -1,8 +1,10 @@
 
 import os
+from typing import Sequence
 
 import pytest
 
+from src.containers.SeqRecord import SeqRecord
 from src.reader_system.ReaderWrapper import ReaderWrapper
 
 from tests.test_read_write.fixtures import some_plain_fasta_fpath, \
@@ -225,7 +227,6 @@ class TestPacketSizeSumSeqLenMode:
     # end def
 
 
-    # TODO: and actual lengths of sequences are not tested!
     def test_packet_size_with_max_seq_len(self,
                                 some_plain_fasta_fpath : str):
         packet_mode = 'sum_seq_len'
@@ -248,6 +249,8 @@ class TestPacketSizeSumSeqLenMode:
                 packet_sizes_obtained.append(
                     len(seq_packet)
                 )
+                max_seq_len_observed = get_max_seq_len(seq_packet)
+                assert max_seq_len_observed <= max_seq_len
             # end for
         # end with
 
@@ -255,3 +258,13 @@ class TestPacketSizeSumSeqLenMode:
         assert packet_sizes_expected == packet_sizes_obtained
     # end def
 # end class
+
+
+def get_max_seq_len(seq_packet: Sequence[SeqRecord]):
+    return max(
+        map(
+            lambda sr: len(sr.get_seq()),
+            seq_packet
+        )
+    )
+# end def

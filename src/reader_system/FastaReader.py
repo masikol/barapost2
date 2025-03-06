@@ -1,6 +1,7 @@
 
-from src.reader_system.FileReader import FileReader
 from src.containers.Fasta import Fasta
+from src.util.prune_seq import prune_seq
+from src.reader_system.FileReader import FileReader
 
 
 class FastaReader(FileReader):
@@ -26,11 +27,14 @@ class FastaReader(FileReader):
             seq_lines.append(line)
         # end while
 
-        seq = ''.join(seq_lines)
-        return Fasta(
-            header=header.lstrip('>'),
-            seq=seq
+        seq_record = Fasta(
+            header=header[1:], # skip the first character
+            seq=''.join(seq_lines)
         )
+        if self.max_seq_len != -1:
+            seq_record = prune_seq(seq_record, self.max_seq_len)
+        # end if
+        return seq_record
     # end def
 
     def _count_records_in_curr_file(self) -> int:

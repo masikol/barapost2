@@ -1,8 +1,9 @@
 
 from typing import Sequence
 
-from src.reader_system.FileReader import FileReader
 from src.containers.Fastq import Fastq
+from src.util.prune_seq import prune_seq
+from src.reader_system.FileReader import FileReader
 
 
 class FastqReader(FileReader):
@@ -31,18 +32,24 @@ class FastqReader(FileReader):
     # end def
 
     def _read_single_record(self) -> Fastq:
-        header    = self.reader.readline().strip().lstrip('@')
+        header    = self.reader.readline().strip()[1:] # skip the first character
         seq       = self.reader.readline().strip()
-        comment = self.reader.readline().strip()
+        comment   = self.reader.readline().strip()
         quality   = self.reader.readline().strip()
 
-        return Fastq(
+        seq_record = Fastq(
             header=header,
             seq=seq,
             comment=comment,
             quality=quality,
             phred_offset=self.phred_offset
         )
+
+        if self.max_seq_len != -1:
+            seq_record = prune_seq(seq_record, self.max_seq_len)
+        # end if
+
+        return seq_record
     # end def
 
     def _count_records_in_curr_file(self) -> int:

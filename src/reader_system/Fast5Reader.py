@@ -13,8 +13,6 @@ class Fast5Reader(FileReader):
 
 
     def _read_single_record(self) -> Fast5:
-        # TODO: is this really more effective than
-        #   just iterating over get_reads()?
         try:
             record = next(self.reader_iterator)
         except StopIteration:
