@@ -5,10 +5,10 @@ import shutil
 
 import pytest
 
-from src.hits.HitManager import HitManager
 from src.containers.AlignResult import AlignResult
-from src.containers.HitToDownload import HitToDownload
-from src.config.hits import DB_FILE_NAME, SEP, COMMENT_CHAR
+from src.seq_db.SeqDbListManager import SeqDbListManager
+from src.containers.SeqDbListRecord import SeqDbListRecord
+from src.config.seq_db import DB_FILE_NAME, SEP, COMMENT_CHAR
 
 
 SOME_ACCESSION = 'NC_045512.2'
@@ -54,14 +54,6 @@ def tmp_classif_dir_path() -> str:
 # end def
 
 
-@pytest.fixture
-def some_hit() -> HitToDownload:
-    return HitToDownload(
-        accession=SOME_ACCESSION,
-        record_name=SOME_RECORD_NAME
-    )
-# end def
-
 
 @pytest.fixture
 def some_align_result() -> AlignResult:
@@ -100,30 +92,30 @@ def empty_dir(dir_path : str):
 
 
 
-class TestHitManager:
+class TestSeqDbListManager:
 
     def test_init_db(self, tmp_classif_dir_path : str):
         empty_dir(tmp_classif_dir_path)
-        hit_manager = HitManager(tmp_classif_dir_path)
-        assert type(hit_manager.hit_dict) == dict
-        assert len(hit_manager.hit_dict) == 0
+        manager = SeqDbListManager(tmp_classif_dir_path)
+        assert type(manager.seq_db_dict) == dict
+        assert len(manager.seq_db_dict) == 0
     # end def
 
     def test_read_empty_db(self, empty_classif_dir_path : str):
-        hit_manager = HitManager(empty_classif_dir_path)
-        assert type(hit_manager.hit_dict) == dict
-        assert len(hit_manager.hit_dict) == 0
+        manager = SeqDbListManager(empty_classif_dir_path)
+        assert type(manager.seq_db_dict) == dict
+        assert len(manager.seq_db_dict) == 0
     # end def
 
     def test_read_non_empty_db(self, non_empty_classif_dir_path : str):
-        hit_manager = HitManager(non_empty_classif_dir_path)
+        manager = SeqDbListManager(non_empty_classif_dir_path)
 
-        assert type(hit_manager.hit_dict) == dict
-        assert len(hit_manager.hit_dict) != 0
+        assert type(manager.seq_db_dict) == dict
+        assert len(manager.seq_db_dict) != 0
 
-        for hit_accession, hit in hit_manager.hit_dict.items():
+        for hit_accession, hit in manager.seq_db_dict.items():
             assert type(hit_accession) == str
-            assert type(hit) == HitToDownload
+            assert type(hit) == SeqDbListRecord
             assert type(hit.accession) == str
             assert hit.accession != ''
             assert type(hit.record_name) == str
@@ -134,23 +126,23 @@ class TestHitManager:
         # end for
     # end def
 
-    def test_add_hit(self,
+    def test_add_seq_db_record(self,
                      non_empty_classif_dir_path : str,
                      some_align_result : AlignResult):
-        hit_manager = HitManager(non_empty_classif_dir_path)
-        assert not some_align_result.hit_accession in hit_manager.hit_dict.keys(), \
-            'Invalid fixture: some_align_result.hit_accession is in hit_manager.hit_dict.keys()'
+        manager = SeqDbListManager(non_empty_classif_dir_path)
+        assert not some_align_result.hit_accession in manager.seq_db_dict.keys(), \
+            'Invalid fixture: some_align_result.hit_accession is in manager.seq_db_dict.keys()'
 
-        before_len = len(hit_manager.hit_dict)
+        before_len = len(manager.seq_db_dict)
         before_keys = frozenset(
-            hit_manager.hit_dict.keys()
+            manager.seq_db_dict.keys()
         )
 
-        hit_manager.add_hit(some_align_result)
+        manager.add_seq_db_record(some_align_result)
 
-        after_len = len(hit_manager.hit_dict)
+        after_len = len(manager.seq_db_dict)
         after_keys = frozenset(
-            hit_manager.hit_dict.keys()
+            manager.seq_db_dict.keys()
         )
 
         assert after_len == before_len + 1
@@ -160,36 +152,36 @@ class TestHitManager:
 
 
     def test_increment_hit(self, non_empty_classif_dir_path : str):
-        hit_manager = HitManager(non_empty_classif_dir_path)
+        manager = SeqDbListManager(non_empty_classif_dir_path)
         some_accession = next(
             iter(
-                hit_manager.hit_dict.keys()
+                manager.seq_db_dict.keys()
             )
         )
-        before_count = hit_manager.hit_dict[some_accession].hit_count
+        before_count = manager.seq_db_dict[some_accession].hit_count
         inc_value = 4
         expected = before_count + inc_value
 
-        hit_manager._increment_hit(some_accession, inc_value)
+        manager._increment_hit(some_accession, inc_value)
 
-        observed = hit_manager.hit_dict[some_accession].hit_count
+        observed = manager.seq_db_dict[some_accession].hit_count
 
         assert observed == expected
     # end def
 
     def test_increment_hit_default(self, non_empty_classif_dir_path : str):
-        hit_manager = HitManager(non_empty_classif_dir_path)
+        manager = SeqDbListManager(non_empty_classif_dir_path)
         some_accession = next(
             iter(
-                hit_manager.hit_dict.keys()
+                manager.seq_db_dict.keys()
             )
         )
-        before_count = hit_manager.hit_dict[some_accession].hit_count
+        before_count = manager.seq_db_dict[some_accession].hit_count
         expected = before_count + 1
 
-        hit_manager._increment_hit(some_accession)
+        manager._increment_hit(some_accession)
 
-        observed = hit_manager.hit_dict[some_accession].hit_count
+        observed = manager.seq_db_dict[some_accession].hit_count
 
         assert observed == expected
     # end def
@@ -198,25 +190,25 @@ class TestHitManager:
     def test_increment_hit_new_hit(self,
                                    non_empty_classif_dir_path : str,
                                    some_align_result : AlignResult):
-        hit_manager = HitManager(non_empty_classif_dir_path)
-        assert not some_align_result.hit_accession in hit_manager.hit_dict.keys(), \
-            'Invalid fixture: some_align_result.hit_accession is in hit_manager.hit_dict.keys()'
+        manager = SeqDbListManager(non_empty_classif_dir_path)
+        assert not some_align_result.hit_accession in manager.seq_db_dict.keys(), \
+            'Invalid fixture: some_align_result.hit_accession is in manager.seq_db_dict.keys()'
 
-        hit_manager.add_hit(some_align_result)
+        manager.add_seq_db_record(some_align_result)
 
-        hit = hit_manager.hit_dict[some_align_result.hit_accession]
+        hit = manager.seq_db_dict[some_align_result.hit_accession]
         assert hit.hit_count == 1
     # end def
 
 
     def test_basic_io(self,
                       non_empty_classif_dir_path : str):
-        hit_manager = HitManager(non_empty_classif_dir_path)
-        expected = hit_manager.hit_dict
+        manager = SeqDbListManager(non_empty_classif_dir_path)
+        expected = manager.seq_db_dict
 
-        hit_manager.rewrite_db()
-        hit_manager = HitManager(non_empty_classif_dir_path)
-        observed = hit_manager.hit_dict
+        manager.rewrite_db()
+        manager = SeqDbListManager(non_empty_classif_dir_path)
+        observed = manager.seq_db_dict
 
         assert type(expected) == type(observed)
         assert len(expected) == len(observed)

@@ -2,11 +2,11 @@
 import os
 
 from src.containers.AlignResult import AlignResult
-from src.containers.HitToDownload import HitToDownload
-from src.config.hits import DB_FILE_NAME, SEP, COMMENT_CHAR
+from src.containers.SeqDbListRecord import SeqDbListRecord
+from src.config.seq_db import DB_FILE_NAME, SEP, COMMENT_CHAR
 
 
-class HitManager:
+class SeqDbListManager:
 
     def __init__(self, work_dirpath : str):
         self.db_fpath = os.path.join(
@@ -14,13 +14,13 @@ class HitManager:
             DB_FILE_NAME
         )
 
-        self.hit_dict = dict()
+        self.seq_db_dict = dict()
         if not os.path.exists(self.db_fpath):
             self._init_db_file()
         elif os.path.getsize(self.db_fpath) == 0:
             self._init_db_file()
         else:
-            self.hit_dict = self._read_hit_dict()
+            self.seq_db_dict = self._read_seq_db_dict()
         # end if
     # end def
 
@@ -31,7 +31,7 @@ class HitManager:
         # end with
     # end def
 
-    def _read_hit_dict(self):
+    def _read_seq_db_dict(self):
         with open(self.db_fpath, 'rt') as input_handle:
             lines = tuple(
                 filter(
@@ -41,12 +41,12 @@ class HitManager:
             )[1:] # and skip the first (header) line
         # end def
 
-        hit_dict = dict()
+        seq_db_dict = dict()
         for line in lines:
-            hit = HitToDownload.from_tsv_row(line)
-            hit_dict[hit.accession] = hit
+            hit = SeqDbListRecord.from_tsv_row(line)
+            seq_db_dict[hit.accession] = hit
         # end for
-        return hit_dict
+        return seq_db_dict
     # end def
 
     def _make_db_comment(self) -> str:
@@ -61,14 +61,14 @@ class HitManager:
     # end def
 
     def _make_db_header(self) -> str:
-        return SEP.join(HitToDownload.__slots__) + '\n'
+        return SEP.join(SeqDbListRecord.__slots__) + '\n'
     # end def
 
 
-    def add_hit(self, align_result : AlignResult):
-        if not align_result.hit_accession in self.hit_dict:
-            hit = HitToDownload.from_align_result(align_result)
-            self.hit_dict[align_result.hit_accession] = hit
+    def add_seq_db_record(self, align_result : AlignResult):
+        if not align_result.hit_accession in self.seq_db_dict:
+            hit = SeqDbListRecord.from_align_result(align_result)
+            self.seq_db_dict[align_result.hit_accession] = hit
         else:
             self._increment_hit(align_result.hit_accession)
         # end if
@@ -76,7 +76,7 @@ class HitManager:
 
 
     def _increment_hit(self, accession: str, value : int = 1):
-        self.hit_dict[accession].increment(value)
+        self.seq_db_dict[accession].increment(value)
     # end def
 
 
@@ -84,7 +84,7 @@ class HitManager:
         with open(self.db_fpath, 'wt') as output_handle:
             output_handle.write(self._make_db_comment())
             output_handle.write(self._make_db_header())
-            for hit in self.hit_dict.values():
+            for hit in self.seq_db_dict.values():
                 output_handle.write(
                     hit.to_tsv_row()
                 )

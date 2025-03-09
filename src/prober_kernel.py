@@ -7,13 +7,13 @@ from typing import Sequence, TypeAlias
 import src.filesystem as fs
 from src.util.prune_seq import prune_seq
 from src.args.ProberArgs import ProberArgs
-from src.hits.HitManager import HitManager
 import src.remote_blast.blast_errors as berr
 from src.containers.HTSRecord import HTSRecord
 from src.containers.SeqRecord import SeqRecord
 from src.containers.AlignResult import AlignResult
 from src.reader_system.FileReader import FileReader
 from src.remote_blast.RemoteBlast import RemoteBlast
+from src.seq_db.SeqDbListManager import SeqDbListManager
 from src.taxonomy.TaxonomyManager import TaxonomyManager
 from src.reader_system.ReaderWrapper import ReaderWrapper
 from src.containers.Fastq import Fastq, make_quality_dict
@@ -48,7 +48,7 @@ class ProberKernel:
             output_dirpath=args.output_dirpath,
         )
         self.taxonomy_manager = TaxonomyManager(args.output_dirpath)
-        self.hit_manager = HitManager(args.output_dirpath)
+        self.seq_db_list_manager = SeqDbListManager(args.output_dirpath)
     # end def
 
 
@@ -329,12 +329,12 @@ class ProberKernel:
             for align_result in align_result_list:
                 if not align_result.hit_accession is None:
                     self.taxonomy_manager.add_taxonomy(align_result.hit_accession)
-                    self.hit_manager.add_hit(align_result)
+                    self.seq_db_list_manager.add_seq_db_record(align_result)
                 # end if
                 sys.stderr.write(align_result.to_console_summary())
             # end for
         # end if
-        self.hit_manager.rewrite_db()
+        self.seq_db_list_manager.rewrite_db()
         self._save_classif_results(align_results, curr_input_fpath)
     # end def
 

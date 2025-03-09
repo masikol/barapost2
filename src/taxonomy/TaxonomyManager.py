@@ -25,7 +25,7 @@ class TaxonomyManager:
         if not os.path.isfile(self._db_fpath) \
            or os.path.getsize(self._db_fpath) == 0:
             self._init_tax_file()
-            self._saved_seq_ids = set() # TODO: why not a taxonomy dict, like in HitManager?
+            self._saved_seq_ids = set() # TODO: why not a taxonomy dict, like in SeqDbListManager?
         # end if
         self._saved_seq_ids = self._read_saved_seq_ids()
     # end def

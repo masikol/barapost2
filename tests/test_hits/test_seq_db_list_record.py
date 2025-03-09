@@ -1,9 +1,9 @@
 
 import pytest
 
-from src.config.hits import SEP
+from src.config.seq_db import SEP
 from src.containers.AlignResult import AlignResult
-from src.containers.HitToDownload import HitToDownload
+from src.containers.SeqDbListRecord import SeqDbListRecord
 
 
 SOME_ACCESSION = 'CP045701.2'
@@ -11,8 +11,8 @@ SOME_RECORD_NAME = 'Pseudomonas brassicacearum strain S-1 chromosome, complete g
 
 
 @pytest.fixture
-def some_hit() -> HitToDownload:
-    return HitToDownload(
+def some_record() -> SeqDbListRecord:
+    return SeqDbListRecord(
         accession=SOME_ACCESSION,
         record_name=SOME_RECORD_NAME,
         hit_count=2,
@@ -37,9 +37,9 @@ def some_align_result() -> AlignResult:
 # end def
 
 
-class TestHitToDownload:
+class TestSeqDbListRecord:
 
-    def test_to_tsv_row(self, some_hit : HitToDownload):
+    def test_to_tsv_row(self, some_record : SeqDbListRecord):
         expected = SEP.join(
             (
                 SOME_ACCESSION,
@@ -48,7 +48,7 @@ class TestHitToDownload:
                 '0'
             )
         ) + '\n'
-        observed = some_hit.to_tsv_row()
+        observed = some_record.to_tsv_row()
         assert observed == expected
     # end def
 
@@ -62,43 +62,43 @@ class TestHitToDownload:
                 '0'
             )
         ) + '\n'
-        expected = HitToDownload(
+        expected = SeqDbListRecord(
             accession=SOME_ACCESSION,
             record_name=SOME_RECORD_NAME,
             hit_count=2,
             replicons_checked=False
         )
-        observed = HitToDownload.from_tsv_row(some_tsv_row)
+        observed = SeqDbListRecord.from_tsv_row(some_tsv_row)
         assert observed == observed, str(observed) + '\n' + str(expected)
     # end def
 
-    def test_increment_default(self, some_hit : HitToDownload):
-        some_hit.hit_count = 5
-        expected = some_hit.hit_count + 1
+    def test_increment_default(self, some_record : SeqDbListRecord):
+        some_record.hit_count = 5
+        expected = some_record.hit_count + 1
 
-        some_hit.increment()
-        observed = some_hit.hit_count
+        some_record.increment()
+        observed = some_record.hit_count
 
         assert observed == expected
     # end def
 
-    def test_increment(self, some_hit : HitToDownload):
-        some_hit.hit_count = 5
+    def test_increment(self, some_record : SeqDbListRecord):
+        some_record.hit_count = 5
         increment_value = 4
-        expected = some_hit.hit_count + increment_value
+        expected = some_record.hit_count + increment_value
 
-        some_hit.increment(increment_value)
-        observed = some_hit.hit_count
+        some_record.increment(increment_value)
+        observed = some_record.hit_count
 
         assert observed == expected
     # end def
 
     def test_from_align_result(self,
                                some_align_result : AlignResult):
-        hit = HitToDownload.from_align_result(some_align_result)
-        assert hit.accession   == SOME_ACCESSION
-        assert hit.record_name == SOME_RECORD_NAME
-        assert hit.hit_count == 1
-        assert hit.replicons_checked == False
+        record = SeqDbListRecord.from_align_result(some_align_result)
+        assert record.accession   == SOME_ACCESSION
+        assert record.record_name == SOME_RECORD_NAME
+        assert record.hit_count == 1
+        assert record.replicons_checked == False
     # end def
 # end class

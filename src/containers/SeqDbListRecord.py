@@ -1,12 +1,12 @@
 
 import sys
 
-from src.config.hits import SEP
+from src.config.seq_db import SEP
 from src.util.strings import str_None_rep
 from src.containers.AlignResult import AlignResult
 
 
-class HitToDownload:
+class SeqDbListRecord:
 
     __slots__ = (
         'accession',
@@ -50,7 +50,7 @@ class HitToDownload:
     @classmethod
     def from_tsv_row(cls,
                      row_str : str,
-                     sep : str = SEP) -> 'HitToDownload':
+                     sep : str = SEP) -> 'SeqDbListRecord':
         split_row = tuple(
             map(
                 str.strip,
@@ -74,7 +74,7 @@ class HitToDownload:
             sys.exit(1)
         # end try
 
-        return HitToDownload(
+        return SeqDbListRecord(
             accession=split_row[0].strip(),
             record_name=split_row[1].strip(),
             hit_count=hits_count,
@@ -85,8 +85,8 @@ class HitToDownload:
 
     @classmethod
     def from_align_result(cls,
-                          align_result : AlignResult) -> 'HitToDownload':
-        return HitToDownload(
+                          align_result : AlignResult) -> 'SeqDbListRecord':
+        return SeqDbListRecord(
             accession=align_result.hit_accession,
             record_name=align_result.hit_name,
             hit_count=1,
@@ -113,7 +113,7 @@ replicons_checked: {self.replicons_checked}.\n'''
     # end def
 
     def __repr__(self) -> str:
-        return f'''HitToDownload(
+        return f'''SeqDbListRecord(
     accession={self.accession!r},
     record_name={self.record_name!r},
     hit_count={self.hit_count!r},
