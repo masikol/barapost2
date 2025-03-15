@@ -163,4 +163,5 @@ cython_debug/
 
 
 # User
+venv
 tests/test_taxonomy/tmp_taxonomy.tsv
