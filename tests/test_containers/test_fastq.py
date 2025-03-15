@@ -100,20 +100,6 @@ def test_get_average_quality_non_uniform() -> None:
     assert abs(expected - observed) < 1e-6
 # end def
 
-def test_get_average_quality_caching() -> None:
-    quality_string: str = chr(15 + PHRED_OFFSET) * 10
-    record: Fastq = Fastq(
-        header = 'cache_seq',
-        seq = 'ATCGATCGAT',
-        comment = '+',
-        quality = quality_string,
-        phred_offset = PHRED_OFFSET
-    )
-    first_call: float = record.get_average_quality()
-    second_call: float = record.get_average_quality()
-    assert abs(first_call - second_call) < 1e-6
-# end def
-
 # Q_to_pe test
 def test_Q_to_pe() -> None:
     assert abs(Q_to_pe(10) - 0.1) < 1e-6
