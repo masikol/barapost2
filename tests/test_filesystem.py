@@ -1,11 +1,13 @@
 
 import os
+import gzip
 from typing import Sequence
+
+from pathlib import Path
 
 import pytest
 
 import src.filesystem as fs
-
 
 RAW_NANOPORE_EXTENSIONS = (
     'fast5',
@@ -13,7 +15,6 @@ RAW_NANOPORE_EXTENSIONS = (
     'blow5',
     'slow5',
 )
-
 
 # === Fixtures ===
 
@@ -257,3 +258,115 @@ class TestGzip:
         # end with
     # end def
 # end class
+
+# remove_file_extension test
+def test_remove_file_extension_normal() -> None:
+    file_path = os.path.join('folder', 'file.fasta')
+    expected = os.path.join('folder', 'file')
+    assert fs.remove_file_extension(file_path) == expected
+# end def
+
+def test_remove_file_extension_multiple_dots() -> None:
+    file_path = os.path.join('folder', 'archive.tar.gz')
+    expected = os.path.join('folder', 'archive.tar')
+    assert fs.remove_file_extension(file_path) == expected
+# end def
+
+def test_remove_file_extension_no_extension() -> None:
+    file_path = os.path.join('folder', 'file')
+    assert fs.remove_file_extension(file_path) == file_path
+# end def
+
+def test_remove_file_extension_trailing_dot() -> None:
+    file_path = os.path.join('folder', 'file.')
+    expected = os.path.join('folder', 'file')
+    assert fs.remove_file_extension(file_path) == expected
+# end def
+
+def test_remove_file_extension_hidden_file() -> None:
+    file_path = os.path.join('folder', '.bashrc')
+    expected = os.path.join('folder', '')
+    assert fs.remove_file_extension(file_path) == expected
+# end def
+
+# gzip_file test
+def test_gzip_file_normal(tmp_path: Path) -> None:
+    fasta_content: bytes = b'>seq1\nATCGATCGATCG\n'
+    src_file: Path = tmp_path / 'sample.fasta'
+    src_file.write_bytes(fasta_content)
+
+    dest_file: Path = tmp_path / 'sample.fasta.gz'
+    fs.gzip_file(str(src_file), str(dest_file))
+
+    assert dest_file.exists()
+    with gzip.open(str(dest_file), 'rb') as f:
+        decompressed: bytes = f.read()
+    # end with
+    assert decompressed == fasta_content
+# end def
+
+def test_gzip_file_empty(tmp_path: Path) -> None:
+    src_file: Path = tmp_path / 'empty.fasta'
+    src_file.write_bytes(b'')
+
+    dest_file: Path = tmp_path / 'empty.fasta.gz'
+    fs.gzip_file(str(src_file), str(dest_file))
+
+    with gzip.open(str(dest_file), 'rb') as f:
+        decompressed: bytes = f.read()
+    # end with
+    assert decompressed == b''
+# end def
+
+def test_gzip_file_overwrite(tmp_path: Path) -> None:
+    fasta_content: bytes = b'>seq2\nGTCAGTCAGTCA\n'
+    src_file: Path = tmp_path / 'data.fasta'
+    src_file.write_bytes(fasta_content)
+
+    dest_file: Path = tmp_path / 'data.fasta.gz'
+    dest_file.write_text('>old_seq\nNNNNNNNNNN\n')
+
+    fs.gzip_file(str(src_file), str(dest_file))
+    with gzip.open(str(dest_file), 'rb') as f:
+        decompressed: bytes = f.read()
+    # end with
+    assert decompressed == fasta_content
+# end def
+
+# empty_dir
+def test_empty_dir_already_empty(tmp_path: Path) -> None:
+    empty_directory: Path = tmp_path / 'empty_dir'
+    empty_directory.mkdir()
+    fs.empty_dir(str(empty_directory))
+    assert list(empty_directory.iterdir()) == []
+# end def
+
+def test_empty_dir_with_files(tmp_path: Path) -> None:
+    test_dir: Path = tmp_path / 'dir_files'
+    test_dir.mkdir()
+    (test_dir / 'a.fasta').write_text('>seqA\nATCG')
+    (test_dir / 'b.fastq').write_text('@seqB\nGTCAGT\n+\n!!!!!!')
+
+    fs.empty_dir(str(test_dir))
+    assert list(test_dir.iterdir()) == []
+# end def
+
+def test_empty_dir_with_subdirectories(tmp_path: Path) -> None:
+    test_dir: Path = tmp_path / 'dir_nested'
+    test_dir.mkdir()
+    sub_dir: Path = test_dir / 'subdir'
+    sub_dir.mkdir()
+    (sub_dir / 'file.fasta').write_text('>seq_nested\nATCGATCG')
+
+    fs.empty_dir(str(test_dir))
+    assert list(test_dir.iterdir()) == []
+# end def
+
+def test_empty_dir_nonexistent(tmp_path: Path) -> None:
+    non_exist_dir: Path = tmp_path / 'nonexistent'
+    try:
+        fs.empty_dir(str(non_exist_dir))
+    except Exception as e:
+        pytest.fail(f'empty_dir raise exception on unexisting directory: {e}')
+    # end try
+# end def
