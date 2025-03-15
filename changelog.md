@@ -1,7 +1,5 @@
-
 ### 15.03.2025
 masikol:
-
 
 #### test/test_filesystem.py
 
@@ -39,3 +37,45 @@ test_empty_dir_with_subdirectories
 test_empty_dir_nonexistent
 
 #####  all 4 passed
+
+
+### 15.03.2025
+masikol:
+
+#### test/test_containers/test_fastq.py
+
+1. ##### get_average_quality
+
+test_get_average_quality_uniform
+
+test_get_average_quality_non_uniform
+
+test_get_average_quality_caching
+
+#####  all 3 passed
+
+2. ##### test_Q_to_pe
+
+test_Q_to_pe
+
+##### 1 test passed
+
+3. ##### pe_to_Q
+
+test_pe_to_Q
+
+test_pe_to_Q_invalid_zero
+
+test_pe_to_Q_invalid_negative
+
+##### all 3 passed
+
+4. make_quality_dict
+
+test_make_quality_dict_with_fastq
+
+test_make_quality_dict_with_dummy_records
+
+test_make_quality_dict_empty
+
+##### all 3 passed
