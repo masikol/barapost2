@@ -8,6 +8,10 @@ class SeqRecord(HTSRecord):
         raise NotImplementedError()
     # end def
 
+    def copy(self) -> 'SeqRecord':
+        raise NotImplementedError()
+    # end def
+
     def get_seq(self) -> str:
         return self.seq
     # end def

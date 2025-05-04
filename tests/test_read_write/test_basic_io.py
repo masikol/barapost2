@@ -18,7 +18,7 @@ from tests.test_read_write.fixtures import some_plain_fasta_fpath, \
                                            some_fast5_fpath, \
                                            tmp_output_dir_path, \
                                            mock_classif_label
-                                           # TODO: S/BLOW5 is to be implemented later
+                                           # TODO: LATER: S/BLOW5 is to be implemented later
                                            # some_blow5_fpath, \
                                            # some_slow5_fpath, \
 
@@ -218,13 +218,20 @@ class TestBasicIO:
             _type_='fast5'
         )
 
-        with reader as input_handle, \
-             writer as output_handle:
-            for packet in input_handle:
-                classified_packet = _mock_classify(packet)
+        # We read reading and writing of FAST5 data in separate with-clauses
+        #    in order to ensure that fast5-io library does not
+        #    perform lazy-loading and the records will still be accessible
+        #    after input file is closed.
+        with reader as input_handle:
+            classified_packets = [
+                _mock_classify(packet) for packet in input_handle
+            ]
+        # end with
+        with writer as output_handle:
+            for classified_packet in classified_packets:
                 output_handle.write(classified_packet)
             # end for
-        # end with)
+        # end with
 
         expected_outfpath = _make_expected_mock_outfpath(
             tmp_output_dir_path,
@@ -239,7 +246,8 @@ class TestBasicIO:
         assert expected_sum == observed_sum
     # end def
 
-    # TODO: S/BLOW5 is to be implemented later
+
+    # TODO: LATER: S/BLOW5 is to be implemented later
     # The test fails:
     # write_record: slow5_aux_add_enum end_reason: 4 could not set to C s5.header.aux_meta struct
     # write_record: slow5_aux_add_enum end_reason: 4 could not set to C s5.header.aux_meta struct

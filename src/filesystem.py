@@ -6,7 +6,7 @@ import glob
 import shutil
 import logging
 
-# TODO: don't forget to move higher to some config abstraction level
+# TODO: RELEASE: don't forget to move higher to some config abstraction level
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -59,7 +59,7 @@ def is_gzipped(file_path : str) -> bool:
 # end def
 
 
-# TODO: call this on arg parsing stage
+# TODO: RELEASE: call this on arg parsing stage
 def stop_if_bad_gzip_file(file_path : str):
     try:
         with gzip.open(file_path, 'rt') as input_handle:
@@ -77,7 +77,7 @@ def get_file_extension(file_path : str) -> str:
     return file_path.split('.')[-1]
 # end def
 
-# TODO: test
+
 def remove_file_extension(file_path : str) -> str:
     basename = os.path.basename(file_path)
     if not '.' in basename:
@@ -111,13 +111,13 @@ def is_pod5(file_path : str) -> bool:
 # end def
 
 
-# TODO: S/BLOW5 is to be implemented later
+# TODO: LATER: S/BLOW5 is to be implemented later
 # def is_blow5(file_path : str) -> bool:
 #     extension = get_file_extension(file_path)
 #     return extension.lower() == 'blow5'
 # # end def
 
-# TODO: S/BLOW5 is to be implemented later
+# TODO: LATER: S/BLOW5 is to be implemented later
 # def is_slow5(file_path : str) -> bool:
 #     extension = get_file_extension(file_path)
 #     return extension.lower() == 'slow5'
@@ -140,7 +140,6 @@ def remove_bad_chars(string : str) -> str:
     return string
 # end def
 
-# TODO: test
 def gzip_file(src_fpath : str, dest_fpath : str):
     with open(src_fpath, 'rb') as input_handle, \
          gzip.open(dest_fpath, 'wb') as output_handle:
@@ -149,7 +148,6 @@ def gzip_file(src_fpath : str, dest_fpath : str):
 # end def
 
 
-# TODO: test
 def empty_dir(dir_path : str):
     paths_ro_rm = glob.glob(
         os.path.join(dir_path, '*')

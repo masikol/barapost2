@@ -7,7 +7,7 @@ from src.writer_system.FileWriter import FileWriter
 
 from src.containers.Pod5 import Pod5
 
-# TODO: if this labled file do exist throw "Input path already exists. Refusing to overwrite:"
+# TODO: RELEASE: if this labled file do exist throw "Input path already exists. Refusing to overwrite:"
 
 class Pod5Writer(FileWriter):
 

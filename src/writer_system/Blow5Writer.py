@@ -6,7 +6,7 @@ from src.containers.Blow5 import Blow5
 
 from src.writer_system.FileWriter import FileWriter
 
-# TODO: S/BLOW5 is to be implemented later
+# TODO: LATER: S/BLOW5 is to be implemented later
 class Blow5Writer(FileWriter):
 
     def _write_single_record(self,

@@ -11,14 +11,14 @@ import src.filesystem as fs
 from src.containers.HTSRecord import HTSRecord
 
 
-# TODO: don't forget to move higher to some config abstraction level
+# TODO: RELEASE: don't forget to move higher to some config abstraction level
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class FileReader(ABC):
 
-    # TODO: add verbose mode:
+    # TODO: LATER: add verbose mode:
     #  start processing
     #  end processing etc
     def __init__(self,
@@ -77,7 +77,6 @@ class FileReader(ABC):
         raise NotImplementedError()
     # end def
 
-    # TODO: test
     @abstractmethod
     def _count_records_in_curr_file(self) -> int:
         raise NotImplementedError()
@@ -149,7 +148,6 @@ class FileReader(ABC):
     # end def
 
 
-    # TODO: add return type hint
     def __iter__(self) -> 'FileReader':
         return self
     # end def

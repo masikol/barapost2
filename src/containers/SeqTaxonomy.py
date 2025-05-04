@@ -201,7 +201,6 @@ class SeqTaxonomy:
                )
     # end def
 
-    # TODO: ask Mishania if this is ok.
     # Mind: __str__ uses colons, but Mishania's __repr__ use '=' chars
     def __repr__(self) -> str:
         return 'SeqTaxonomy(\n{}\n)'.format(self.__str__())

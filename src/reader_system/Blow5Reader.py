@@ -4,7 +4,7 @@ from pyslow5 import Open
 from src.reader_system.FileReader import FileReader
 from src.containers.Blow5 import Blow5
 
-# TODO: S/BLOW5 is to be implemented later
+# TODO: LATER: S/BLOW5 is to be implemented later
 class Blow5Reader(FileReader):
 
     def _check_file_end(self, record : Blow5) -> bool:

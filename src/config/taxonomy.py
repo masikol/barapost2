@@ -40,3 +40,6 @@ OWN_SEQ_TAXONOMY_FMT = r"(((%s)?%s){6}(%s)?)" % (HIGH_TAX_NAME_PATT, OWN_SEQ_TAX
 
 # The name of a taxonomy file in barapost work dir
 DB_FILE_NAME = 'taxonomy.tsv'
+
+# Maximum number of attempts to search taxonomy
+MAX_SEARCH_ATTEMPT_COUNT = 3

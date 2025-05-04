@@ -41,4 +41,11 @@ seq: {seq_concise}.\n'''
     def get_seq_id(self) -> str:
         return self.header.partition(' ')[0]
     # end def
+
+    def copy(self) -> 'Fasta':
+        return Fasta(
+            header=self.header,
+            seq=self.seq
+        )
+    # end def
 # end class

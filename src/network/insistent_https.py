@@ -9,12 +9,12 @@ from src.network.RequestFailError import RequestFailError
 from src.config.network import MAX_ATTEMPT_COUNT, DEFAULT_TIMEOUT
 
 
-# TODO: don't forget to move higher to some config abstraction level
+# TODO: RELEASE: don't forget to move higher to some config abstraction level
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-# TODO: ???
+# TODO: do we really need this shit?
 # try:
 #     import ssl
 # except ImportError:

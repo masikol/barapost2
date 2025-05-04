@@ -11,12 +11,12 @@ from src.reader_system.FastaReader import FastaReader
 from src.reader_system.FastqReader import FastqReader
 from src.reader_system.Fast5Reader import Fast5Reader
 from src.reader_system.Pod5Reader  import Pod5Reader
-# TODO: S/BLOW5 is to be implemented later
+# TODO: LATER: S/BLOW5 is to be implemented later
 # from src.reader_system.Slow5Reader import Slow5Reader
 # from src.reader_system.Blow5Reader import Blow5Reader
 
 
-# TODO: don't forget to move higher to some config abstraction level
+# TODO: RELEASE: don't forget to move higher to some config abstraction level
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class ReaderWrapper(object):
                  n_first_skip_dict : dict = dict(),
                  phred_offset : int = 33):
 
-        # TODO: we'll handle this at the arg parsing stage
+        # TODO: RELEASE: we'll handle this at the arg parsing stage
         # if not os.path.isfile(file_path):
         #     raise FileNotFoundError(
         #         f'File `{file_path}` does not exist.'
@@ -73,9 +73,7 @@ class ReaderWrapper(object):
             self.packet_mode = 'seq_count'
         # end if
 
-        # TODO:
-        # 1. catch StopIteration? Or we will handle this at the arg parsing stage?
-        # 2. We will assume that file_paths is homogenous: only fasta, only fastq as so on
+        # TODO: RELEASE: catch StopIteration? Or we will handle this at the arg parsing stage?
         curr_file_path = next(iter(file_paths))
 
         if fs.is_fasta(curr_file_path):
@@ -107,7 +105,7 @@ class ReaderWrapper(object):
                 file_paths=self.file_paths,
                 n_first_skip_dict=n_first_skip_dict
             )
-        # TODO: S/BLOW5 is to be implemented later
+        # TODO: LATER: S/BLOW5 is to be implemented later
         # elif fs.is_blow5(curr_file_path):
         #     self.reader = Blow5Reader(
         #         file_paths=self.file_paths,
@@ -138,7 +136,7 @@ class ReaderWrapper(object):
         allowed_extensions = fs.FASTA_EXTENSIONS \
                            | fs.FASTQ_EXTENSIONS \
                            | {'fast5', 'pod5'}
-                           # TODO: S/BLOW5 is to be implemented later
+                           # TODO: LATER: S/BLOW5 is to be implemented later
                            # | {'fast5', 'pod5', 'blow5', 'slow5'}
         return 'Invalid file type (extension): `{}`. Allowed types: {}.'.format(
             file_type,

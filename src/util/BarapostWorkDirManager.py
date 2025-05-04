@@ -5,6 +5,7 @@ import json
 import glob
 import shutil
 import logging
+import hashlib
 from typing import Sequence, TypeAlias
 
 import src.filesystem as fs
@@ -12,7 +13,7 @@ from src.time import humane_time
 from src.containers.HTSRecord import HTSRecord
 from src.containers.Fastq import make_quality_dict
 
-# TODO: don't forget to move higher to some config abstraction level
+# TODO: RELEASE: don't forget to move higher to some config abstraction level
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -58,18 +59,18 @@ class BarapostWorkDirManager:
         )
     # end def
 
-    # TODO: 's.fasta(.gz)', 's.fastq(.gz)' etc will collide!
     def make_classification_fpath(self, input_hts_fpath : str) -> str:
-        if fs.is_gzipped(input_hts_fpath):
-            input_hts_fpath = input_hts_fpath[:-3]
-        # end if
-        base_name = os.path.basename(
-            fs.remove_file_extension(input_hts_fpath)
-        )
+        classif_hash = self.make_classif_hash(input_hts_fpath)
         return os.path.join(
             self.make_classification_dir_path(),
-            '{}.tsv'.format(base_name)
+            '{}.tsv'.format(classif_hash)
         )
+    # end def
+
+    def make_classif_hash(self, input_hts_fpath : str) -> str:
+        return hashlib.md5(
+            input_hts_fpath.encode('utf-8')
+        ).hexdigest()
     # end def
 
     def count_classification_records(self, input_hts_fpath : str) -> int:
@@ -82,7 +83,7 @@ class BarapostWorkDirManager:
         with open(classif_fpath, 'rt') as input_handle:
             n_lines = len(input_handle.readlines())
         # end with
-        count = n_lines - 1 # minus header
+        count = n_lines - 2 # minus comment and minus header
         if count > 0:
             return count
         else:
@@ -187,15 +188,10 @@ class BarapostWorkDirManager:
 
 
     def make_tmp_remote_blast_fpath(self, input_hts_fpath : str) -> str:
-        if fs.is_gzipped(input_hts_fpath):
-            input_hts_fpath = input_hts_fpath[:-3]
-        # end if
-        base_name = os.path.basename(
-            fs.remove_file_extension(input_hts_fpath)
-        )
+        classif_hash = self.make_classif_hash(input_hts_fpath)
         return os.path.join(
             self.make_tmp_dir_path(),
-            '{}_tmp.json'.format(base_name)
+            '{}_tmp.json'.format(classif_hash)
         )
     # end def
 

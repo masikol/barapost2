@@ -99,6 +99,15 @@ quality: {quality_concise}.\n'''
     def get_seq_id(self) -> str:
         return self.header.partition(' ')[0]
     # end def
+
+    def copy(self) -> 'Fastq':
+        return Fastq(
+            header=self.header,
+            seq=self.seq,
+            comment=self.comment,
+            quality=self.quality
+        )
+    # end def
 # end class
 
 

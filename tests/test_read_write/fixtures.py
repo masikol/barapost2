@@ -67,7 +67,7 @@ def some_fast5_fpath() -> str:
     )
 # end def
 
-# TODO: S/BLOW5 is to be implemented later
+# TODO: LATER: S/BLOW5 is to be implemented later
 # @pytest.fixture(scope='session')
 # def some_blow5_fpath() -> str:
 #     return os.path.join(
@@ -76,7 +76,7 @@ def some_fast5_fpath() -> str:
 #     )
 # # end def
 
-# TODO: S/BLOW5 is to be implemented later
+# TODO: LATER: S/BLOW5 is to be implemented later
 # @pytest.fixture(scope='session')
 # def some_slow5_fpath() -> str:
 #     return os.path.join(

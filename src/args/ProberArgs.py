@@ -5,7 +5,7 @@ from typing import Sequence
 
 class ProberArgs:
 
-    # TODO: implement
+    # TODO: RELEASE: implement
     # @classmethod
     # def parse(cls) -> 'ProberArgs':
     #     return ProberArgs(
@@ -33,5 +33,4 @@ class ProberArgs:
         self.organisms          = organisms
         self.phred_offset       = phred_offset
     # end def
-
 # end class

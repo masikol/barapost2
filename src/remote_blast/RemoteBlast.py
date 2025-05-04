@@ -16,7 +16,7 @@ from src.network.insistent_https import insistent_https
 from src.config.remote_blast import PROGRAM, HITLIST_SIZE, DATABASE, \
                                     SERVER, SERVER_PATH, AUTHOR_EMAIL, TOOL_NAME
 
-# TODO: don't forget to move higher to some config abstraction level
+# TODO: RELEASE: don't forget to move higher to some config abstraction level
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -67,14 +67,14 @@ class RemoteBlast:
             'CMD'            : 'PUT', # Operation to perform
             'PROGRAM'        : PROGRAM, # BLAST program
             'BLAST_PROGRAMS' : self.blast_algorithm,
-            'DATABASE'       : DATABASE, # TODO: nt, core_nt, refseq_reference_genomes, refseq_genomes, wgs
+            'DATABASE'       : DATABASE, # TODO: LATER: nt, core_nt, refseq_reference_genomes, refseq_genomes, wgs
             'HITLIST_SIZE'   : HITLIST_SIZE, # we need only the best hit
         }
 
         payload_dict['QUERY'] = ''.join(
-            map(
-                lambda sr : '>{}\n{}\n'.format(sr.header, sr.seq), # TODO: make separate function
-                packet
+            (
+                self._make_fasta_str(sr.header, sr.seq)
+                    for sr in packet
             )
         )
 
@@ -88,9 +88,9 @@ class RemoteBlast:
             payload_dict['tool'] = TOOL_NAME
         # end if
 
-        # TODO: just nt? and other dbs?
+        # TODO: LATER: just nt? and other dbs?
         # `nt` database slices:
-        # TODO: exclude organisms
+        # TODO: LATER: exclude organisms
         for i, org in enumerate(self.organisms):
             payload_dict[
                 'EQ_MENU{}'.format(i if i > 0 else '')
@@ -104,6 +104,10 @@ class RemoteBlast:
                 'Content-Type' : 'application/x-www-form-urlencoded',
             },
         }
+    # end def
+
+    def _make_fasta_str(self, header : str, seq : str) -> str:
+        return '>{}\n{}\n'.format(header, seq)
     # end def
 
     def _parse_rid_rtoe(self, submission_response : str) -> (str, int):
@@ -194,7 +198,7 @@ class RemoteBlast:
                         sys.stderr.write('-' * i + '\n')
                     # end for
                     logging.info('There are hits!')
-                    # TODO: Retrieve human-readable text and put it into result directory ???
+                    # TODO: LATER: Retrieve human-readable text and put it into result directory ???
                 elif "ThereAreHits=no" in job_status_response:
                     # if there are no hits
                     logging.info('There are no hits. It happens.')
@@ -351,7 +355,7 @@ class RemoteBlast:
 
             query_align_results = list()
 
-            # TODO: print or save search_results['message'] if it is set??
+            # TODO: LATER: print or save search_results['message'] if it is set??
             hits = search_results['hits']
             if len(hits) == 0:
                 query_align_results.append(

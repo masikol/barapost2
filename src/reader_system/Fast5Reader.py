@@ -28,8 +28,7 @@ class Fast5Reader(FileReader):
     # end def
 
 
-    # TODO: Manualy close it after writing!!!
-    def close(self) -> None: # Do not close FAST5 files till write it
+    def close(self) -> None:
         self.reader.close()
     # end def
 

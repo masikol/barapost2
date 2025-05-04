@@ -59,7 +59,7 @@ class TaxonomyManager:
 
         if seq_id_is_new:
             if seq_taxonomy is None:
-                seq_taxonomy = self._taxonomy_searcher.seach_taxonomy(seq_id)
+                seq_taxonomy = self._taxonomy_searcher.search_taxonomy(seq_id)
             # end if
             self._saved_seq_ids.add(seq_id)
             with open(self._db_fpath, 'at') as out_handle:

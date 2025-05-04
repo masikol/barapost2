@@ -20,7 +20,7 @@ from src.containers.Fastq import Fastq, make_quality_dict
 from src.util.BarapostWorkDirManager import BarapostWorkDirManager
 
 
-# TODO: don't forget to move higher to some config abstraction level
+# TODO: RELEASE: don't forget to move higher to some config abstraction level
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -198,7 +198,7 @@ class ProberKernel:
                 self.work_dir_manager.rm_tmp_remote_blast_file(
                     input_fpath
                 )
-                self._save_align_resuls_old_job(
+                self._save_align_results_old_job(
                     align_results,
                     tmp_data['fpath'],
                     tmp_data['quality_dict'],
@@ -271,7 +271,11 @@ class ProberKernel:
             if err.code == berr.ACTION_NO_HITS:
                 align_results = self._make_empty_align_results(packet)
                 curr_input_fpath = seq_reader.get_curr_infpath()
-                self._save_align_resuls(align_results, curr_input_fpath, packet)
+                self._save_align_results_current_job(
+                    align_results,
+                    curr_input_fpath,
+                    packet
+                )
             elif err.code == berr.ACTION_RESEND:
                 self._classify_packet(packet, seq_reader)
             elif err.code == berr.ACTION_SPLIT_AND_RESEND:
@@ -285,46 +289,49 @@ class ProberKernel:
             # end if
         else:
             curr_input_fpath = seq_reader.get_curr_infpath()
-            self._save_align_resuls(align_results, curr_input_fpath, packet)
+            self._save_align_results_current_job(
+                align_results,
+                curr_input_fpath,
+                packet
+            )
             self.work_dir_manager.rm_tmp_remote_blast_file(curr_input_fpath)
         # end try
     # end def
 
-    def _save_align_resuls(self,
-                           align_results : AlignResultDict,
-                           curr_input_fpath : str,
-                           packet : SeqPacket):
+    def _save_align_results_current_job(self,
+                                        align_results : AlignResultDict,
+                                        curr_input_fpath : str,
+                                        packet : SeqPacket):
         quality_dict = make_quality_dict(packet)
         align_results = self._add_quality_to_align_results(
             align_results,
             quality_dict
         )
-        self._really_save_align_results(
+        self._save_align_results(
             align_results,
             curr_input_fpath
         )
     # end def
 
-    def _save_align_resuls_old_job(self,
-                                   align_results : AlignResultDict,
-                                   curr_input_fpath : str,
-                                   quality_dict : dict[str, float],
-                                   n_first_skip_dict : dict[str, int]):
+    def _save_align_results_old_job(self,
+                                    align_results : AlignResultDict,
+                                    curr_input_fpath : str,
+                                    quality_dict : dict[str, float],
+                                    n_first_skip_dict : dict[str, int]):
         align_results = self._add_quality_to_align_results(
             align_results,
             quality_dict
         )
-        self._really_save_align_results(
+        self._save_align_results(
             align_results,
             curr_input_fpath
         )
         n_first_skip_dict[curr_input_fpath] += len(align_results)
     # end def
 
-    # TODO: stupid method name
-    def _really_save_align_results(self,
-                                   align_results : AlignResultDict,
-                                   curr_input_fpath : str):
+    def _save_align_results(self,
+                            align_results : AlignResultDict,
+                            curr_input_fpath : str):
         for query_id, align_result_list in align_results.items():
             for align_result in align_result_list:
                 if not align_result.hit_accession is None:
@@ -377,6 +384,12 @@ class ProberKernel:
         # end if
         with open(classif_fpath, mode) as output_handle:
             if write_header:
+                # TODO: move this to some another class/function
+                #   so that barapost-local-kernal would not dublicate this code
+                output_handle.write(
+                    '# This is the classification for the file {}\n' \
+                        .format(curr_input_fpath)
+                )
                 output_handle.write(
                     AlignResult.get_header_str()
                 )

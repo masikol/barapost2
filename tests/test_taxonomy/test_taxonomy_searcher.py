@@ -35,7 +35,7 @@ class TestTaxonomySearcher:
 
     def test_case_1(self, accession_number_1):
         tax_searcher = TaxonomySearcher()
-        seq_taxonomy = tax_searcher.seach_taxonomy(accession_number_1)
+        seq_taxonomy = tax_searcher.search_taxonomy(accession_number_1)
         assert seq_taxonomy.seq_id   == accession_number_1
         assert seq_taxonomy.rank     == 'Species'
         assert seq_taxonomy.tax_name == 'Pseudomonas brassicacearum'
@@ -50,7 +50,7 @@ class TestTaxonomySearcher:
 
     def test_case_2(self, accession_number_2):
         tax_searcher = TaxonomySearcher()
-        seq_taxonomy = tax_searcher.seach_taxonomy(accession_number_2)
+        seq_taxonomy = tax_searcher.search_taxonomy(accession_number_2)
         assert seq_taxonomy.seq_id   == accession_number_2
         assert seq_taxonomy.rank     == 'Species'
         assert seq_taxonomy.tax_name == 'Pseudomonas brassicacearum'
@@ -65,7 +65,7 @@ class TestTaxonomySearcher:
 
     def test_case_3(self, accession_number_3):
         tax_searcher = TaxonomySearcher()
-        seq_taxonomy = tax_searcher.seach_taxonomy(accession_number_3)
+        seq_taxonomy = tax_searcher.search_taxonomy(accession_number_3)
         assert seq_taxonomy.seq_id   == accession_number_3
         assert seq_taxonomy.rank     == 'Genus'
         assert seq_taxonomy.tax_name == 'Pseudomonas'
@@ -80,7 +80,7 @@ class TestTaxonomySearcher:
 
     def test_case_4(self, accession_number_4):
         tax_searcher = TaxonomySearcher()
-        seq_taxonomy = tax_searcher.seach_taxonomy(accession_number_4)
+        seq_taxonomy = tax_searcher.search_taxonomy(accession_number_4)
         assert seq_taxonomy.seq_id   == accession_number_4
         assert seq_taxonomy.rank     == 'Domain'
         assert seq_taxonomy.tax_name == 'Bacteria'

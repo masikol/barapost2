@@ -1,4 +1,6 @@
 
+import sys
+import time
 import json
 import logging
 from xml.etree import ElementTree
@@ -7,19 +9,47 @@ from xml.etree.ElementTree import ParseError as XMLParseError
 from src.taxonomy.Errors import TaxonomyParseError
 from src.containers.SeqTaxonomy import SeqTaxonomy
 from src.network.insistent_https import insistent_https
-from src.config.taxonomy import RANKS_SORTED_DESCENDING
+from src.config.taxonomy import RANKS_SORTED_DESCENDING, \
+                                MAX_SEARCH_ATTEMPT_COUNT
 
 
-# TODO: don't forget to move higher to some config abstraction level
+# TODO: RELEASE: don't forget to move higher to some config abstraction level
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class TaxonomySearcher:
 
-    def seach_taxonomy(self, accession_number: str) -> SeqTaxonomy:
-        tax_id = self._acc2tax_id(accession_number)
-        taxonomy = self._tax_id2taxonomy(tax_id, accession_number)
+    def search_taxonomy(self, accession_number: str) -> SeqTaxonomy:
+        error = True
+        sleep_time = 30 # s
+        attempt_i = 0
+
+        while error:
+            try:
+                tax_id = self._acc2tax_id(accession_number)
+                taxonomy = self._tax_id2taxonomy(tax_id, accession_number)
+            except TaxonomyParseError as err:
+                logging_str = 'Error. Cannot retrieve taxonomy for `{}`'.format(
+                    accession_number
+                )
+                if attempt_i < MAX_SEARCH_ATTEMPT_COUNT:
+                    logging_str += '{} taxonomy search attempts left, waiting for {} sec... ' \
+                        .format(MAX_SEARCH_ATTEMPT_COUNT - attempt_i, sleep_time)
+                    logging.warning(logging_str)
+                    attempt_i += 1
+                    time.sleep(sleep_time)
+                else:
+                    logging.error(logging_str)
+                    logging.error('Exitting')
+                    sys.exit(1)
+                # end if
+                tax_id, taxonomy = None, None # reset just in case
+                time.sleep(sleep_time)
+            else:
+                error = False
+            # end while
+        # end while
         return taxonomy
     # end def
 
