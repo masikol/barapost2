@@ -1,0 +1,3 @@
+# This is the classification for the file /home/masikol/cager/repos/barapost2/tests/test_remote_blast/data/query_corona_seq.fasta
+query_id	hit_name	hit_accession	query_length	alignment_length	identity	gaps	evalue	avg_quality	accuracy
+query_corona_seq	Severe acute respiratory syndrome coronavirus 2	PQ567387	350	350	100.0	0	0		

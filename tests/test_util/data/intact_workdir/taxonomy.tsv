@@ -1,0 +1,5 @@
+seq_id	rank	tax_name	Domain	Phylum	Class	Order	Family	Genus	Species
+PQ567387	No rank	Severe acute respiratory syndrome coronavirus 2		Pisuviricota	Pisoniviricetes	Nidovirales	Coronaviridae	Betacoronavirus	Betacoronavirus pandemicum
+CP180387	Subspecies	Bifidobacterium animalis subsp. lactis		Actinomycetota	Actinomycetes	Bifidobacteriales	Bifidobacteriaceae	Bifidobacterium	Bifidobacterium animalis
+CP034414	Species	Bacillus safensis		Bacillota	Bacilli	Bacillales	Bacillaceae	Bacillus	Bacillus safensis
+CP099712	Species	Dietzia kunjamensis		Actinomycetota	Actinomycetes	Mycobacteriales	Dietziaceae	Dietzia	Dietzia kunjamensis

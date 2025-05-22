@@ -1,0 +1,9 @@
+# This is the classification for the file /home/masikol/cager/repos/barapost2/tests/test_read_write/data/test_input/some_seqs.fastq.gz
+query_id	hit_name	hit_accession	query_length	alignment_length	identity	gaps	evalue	avg_quality	accuracy
+711bf04d-20f5-4418-9712-16168ef98999			526					5.43	71.36
+52a41318-f8b9-4d61-a21f-4a907f107973	Bifidobacterium animalis subsp. lactis	CP180387	1000	990	95.25252525252526	35	0	13.64	95.67
+62b9dc2d-5462-4c2e-97f2-b8e70c90de50	Bacillus safensis	CP034414	1000	990	88.38383838383838	66	0	9.29	88.22
+05e09586-6d7c-4102-89b5-3256a45f7dcc	Bifidobacterium animalis subsp. lactis	CP180387	413	382	76.70157068062828	51	9.31296e-37	5.77	73.51
+326bcca5-9870-45d1-886d-2dfe632e262f	Bifidobacterium animalis subsp. lactis	CP180387	1000	923	83.31527627302276	78	0	7.38	81.72
+6ba2fc30-f22e-4273-b4e1-bb03e080aa58	Dietzia kunjamensis	CP099712	1000	995	92.96482412060301	40	0	12.3	94.11
+59dca7d6-7bcb-431a-a9a2-5f0d75e4a4c9	Dietzia kunjamensis	CP099712	496	474	96.83544303797468	13	0	13.77	95.8

@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 SeqPacket : TypeAlias = Sequence[HTSRecord]
 
 
-# TODO: test
 class BarapostWorkDirManager:
 
     def __init__(self, work_dirpath : str):
@@ -150,6 +149,8 @@ class BarapostWorkDirManager:
         logging.info('Emptying temporary directory: `{}`...'.format(tmp_dirpath))
         fs.empty_dir(tmp_dirpath)
         logging.info('Done.')
+
+        return archive_dirparth
     # end def
 
     def make_classif_archive_dirpath(self):
@@ -216,7 +217,7 @@ class BarapostWorkDirManager:
     # end def
 
     def load_tmp_remote_blast_file(self,
-                                   input_hts_fpath : str):
+                                   input_hts_fpath : str) -> dict:
         tmp_fpath = self.make_tmp_remote_blast_fpath(input_hts_fpath)
         if not os.path.exists(tmp_fpath):
             return None
