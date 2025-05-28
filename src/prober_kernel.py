@@ -94,11 +94,23 @@ class ProberKernel:
 
         # _ask_for_resumption ensures that resume_action holds proper value
         if resume_action == ACTION_ARCHIVE:
-            self.work_dir_manager.archive_classification_dir()
+            self.work_dir_manager.archive_workdir_files()
             n_first_skip_dict = dict() # empty it: start from the beginning
+            self.taxonomy_manager = TaxonomyManager(
+                self.work_dir_manager.work_dirpath
+            )
+            self.seq_db_list_manager = SeqDbListManager(
+                self.work_dir_manager.work_dirpath
+            )
         elif resume_action == ACTION_REWRITE:
-            self.work_dir_manager.empty_old_run_dirs()
+            self.work_dir_manager.remove_workdir_files()
             n_first_skip_dict = dict() # empty it: start from the beginning
+            self.taxonomy_manager = TaxonomyManager(
+                self.work_dir_manager.work_dirpath
+            )
+            self.seq_db_list_manager = SeqDbListManager(
+                self.work_dir_manager.work_dirpath
+            )
         elif resume_action == ACTION_EXIT:
             logging.info('Bye!')
             sys.exit(0)

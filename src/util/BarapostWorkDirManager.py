@@ -10,6 +10,8 @@ from typing import Sequence, TypeAlias
 
 import src.filesystem as fs
 from src.time import humane_time
+from src.config.seq_db import DB_FILE_NAME as SEQDB_DB_FILE_NAME
+from src.config.taxonomy import DB_FILE_NAME as TAX_DB_FILE_NAME
 from src.containers.HTSRecord import HTSRecord
 from src.config.classif_files import COMMENT_CHAR
 from src.containers.AlignResult import AlignResult
@@ -92,77 +94,47 @@ class BarapostWorkDirManager:
         # end if
     # end def
 
-    def empty_old_run_dirs(self):
+    def remove_workdir_files(self):
         classification_dirpath = self.make_classification_dir_path()
         tmp_dirpath = self.make_tmp_dir_path()
         for dirpath in (classification_dirpath, tmp_dirpath):
-            logging.info('Emptying directory: `{}`...'.format(dirpath))
-            fs.empty_dir(dirpath)
-            logging.info('Done.')
-        # end for
-    # end def
-
-    def archive_classification_dir(self):
-        classification_dirpath = self.make_classification_dir_path()
-        archive_dirparth = self.make_classif_archive_dirpath()
-        os.mkdir(archive_dirparth)
-
-        logging.info(
-            'Archiving classification directory: `{}` -> `{}`...' \
-                .format(classification_dirpath, archive_dirparth)
-        )
-
-        classif_fpaths = glob.glob(
-            os.path.join(
-                classification_dirpath,
-                '*'
-            )
-        )
-
-        for fpath in classif_fpaths:
-            if os.path.isfile(fpath):
-                dest_fpath = os.path.join(
-                    archive_dirparth,
-                    os.path.basename(fpath) + '.gz'
-                )
-                logging.info(
-                    'Gzipping file `{}` -> `{}`'.format(
-                        fpath, dest_fpath
-                    )
-                )
-                fs.gzip_file(fpath, dest_fpath)
-                os.unlink(fpath)
-            elif os.path.isdir(fpath):
-                dest_fpath = os.path.join(
-                    archive_dirparth,
-                    os.path.basename(fpath)
-                )
-                logging.info(
-                    'Moving directory `{}` -> `{}`'.format(
-                        fpath, dest_fpath
-                    )
-                )
-                os.rename(fpath, dest_fpath)
+            if os.path.isdir(dirpath):
+                logging.info('Emptying directory: `{}`...'.format(dirpath))
+                fs.empty_dir(dirpath)
             # end if
         # end for
-        logging.info('Archivation is completed.')
 
-        tmp_dirpath = self.make_tmp_dir_path()
-        logging.info('Emptying temporary directory: `{}`...'.format(tmp_dirpath))
-        fs.empty_dir(tmp_dirpath)
-        logging.info('Done.')
-
-        return archive_dirparth
+        files_to_rm = (
+            os.path.join(self.work_dirpath, SEQDB_DB_FILE_NAME),
+            os.path.join(self.work_dirpath, TAX_DB_FILE_NAME),
+        )
+        for fpath in files_to_rm:
+            if os.path.isfile(fpath):
+                logging.info('Removing file: `{}`...'.format(fpath))
+                os.unlink(fpath)
+            # end if
+        # end for
+        logging.info('Old results have been deleted.')
     # end def
 
-    def make_classif_archive_dirpath(self):
+    def archive_workdir_files(self):
+        archive_dirpath = self.make_archive_dirpath()
+        os.mkdir(archive_dirpath)
+        self._archive_classification_dir(archive_dirpath)
+        self._archive_seq_db_list_file(archive_dirpath)
+        self._archive_taxonomy_file(archive_dirpath)
+        self._empty_blast_tmp_dir()
+        return archive_dirpath
+    # end def
+
+    def make_archive_dirpath(self):
         time_str = humane_time() \
             .replace(' ', '') \
             .replace(':', '') \
             .replace('-', '')
         archive_dirpath = os.path.join(
             self.work_dirpath,
-            'classification_archive_{}'.format(time_str)
+            'archive_{}'.format(time_str)
         )
 
         if os.path.isdir(archive_dirpath):
@@ -187,6 +159,95 @@ class BarapostWorkDirManager:
             # end if
         # end if
         return archive_dirpath
+    # end def
+
+    def _archive_classification_dir(self, archive_dirpath : str):
+        classification_dirpath = self.make_classification_dir_path()
+        classif_archive_dirpath = os.path.join(archive_dirpath, 'classification')
+        os.mkdir(classif_archive_dirpath)
+
+        logging.info(
+            'Archiving classification directory: `{}` -> `{}`...' \
+                .format(classification_dirpath, classif_archive_dirpath)
+        )
+
+        classif_fpaths = glob.glob(
+            os.path.join(
+                classification_dirpath,
+                '*'
+            )
+        )
+
+        for fpath in classif_fpaths:
+            if os.path.isfile(fpath):
+                dest_fpath = os.path.join(
+                    classif_archive_dirpath,
+                    os.path.basename(fpath) + '.gz'
+                )
+                logging.info(
+                    'Gzipping file `{}` -> `{}`'.format(
+                        fpath, dest_fpath
+                    )
+                )
+                fs.gzip_file(fpath, dest_fpath)
+                os.unlink(fpath)
+            elif os.path.isdir(fpath):
+                dest_fpath = os.path.join(
+                    classif_archive_dirpath,
+                    os.path.basename(fpath)
+                )
+                logging.info(
+                    'Moving directory `{}` -> `{}`'.format(
+                        fpath, dest_fpath
+                    )
+                )
+                os.rename(fpath, dest_fpath)
+            # end if
+        # end for
+        logging.info('Archivation is completed.')
+
+        return classif_archive_dirpath
+    # end def
+
+    def _archive_seq_db_list_file(self, archive_dirpath : str):
+        seq_db_list_fpath = os.path.join(self.work_dirpath, SEQDB_DB_FILE_NAME)
+        if os.path.isfile(seq_db_list_fpath):
+            dest_fpath = os.path.join(
+                archive_dirpath,
+                '{}.gz'.format(SEQDB_DB_FILE_NAME)
+            )
+            logging.info(
+                'Gzipping file `{}` -> `{}`'.format(
+                    seq_db_list_fpath, dest_fpath
+                )
+            )
+            fs.gzip_file(seq_db_list_fpath, dest_fpath)
+            os.unlink(seq_db_list_fpath)
+        # end if
+    # end def
+
+    def _archive_taxonomy_file(self, archive_dirpath : str):
+        taxonomy_fpath = os.path.join(self.work_dirpath, TAX_DB_FILE_NAME)
+        if os.path.isfile(taxonomy_fpath):
+            dest_fpath = os.path.join(
+                archive_dirpath,
+                '{}.gz'.format(TAX_DB_FILE_NAME)
+            )
+            logging.info(
+                'Gzipping file `{}` -> `{}`'.format(
+                    taxonomy_fpath, dest_fpath
+                )
+            )
+            fs.gzip_file(taxonomy_fpath, dest_fpath)
+            os.unlink(taxonomy_fpath)
+        # end if
+    # end def
+
+    def _empty_blast_tmp_dir(self):
+        tmp_dirpath = self.make_tmp_dir_path()
+        logging.info('Emptying temporary directory: `{}`...'.format(tmp_dirpath))
+        fs.empty_dir(tmp_dirpath)
+        logging.info('Done.')
     # end def
 
 

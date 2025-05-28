@@ -10,6 +10,8 @@ import pytest
 from src.containers.Fasta import Fasta
 from src.containers.HTSRecord import HTSRecord
 from src.containers.AlignResult import AlignResult
+from src.config.seq_db import DB_FILE_NAME as SEQDB_DB_FILE_NAME
+from src.config.taxonomy import DB_FILE_NAME as TAX_DB_FILE_NAME
 from src.util.BarapostWorkDirManager import BarapostWorkDirManager
 from src.config.classif_files import SEP as CLASSIF_COLUMN_SEP
 from src.config.classif_files import COMMENT_CHAR as CLASSIF_COMMENT_CHAR
@@ -347,12 +349,12 @@ class TestWorkDirManager:
         shutil.copytree(intact_workdir_path, intact_workdir_copy_path)
 
         manager = BarapostWorkDirManager(intact_workdir_copy_path)
-        archive_dirpath = manager.make_classif_archive_dirpath()
+        archive_dirpath = manager.make_archive_dirpath()
 
         assert type(archive_dirpath) == str
         assert os.path.dirname(archive_dirpath) == intact_workdir_copy_path
         assert re.match(
-            r'classification_archive_[0-9]+',
+            r'archive_[0-9]+',
             os.path.basename(archive_dirpath)
         )
 
@@ -360,7 +362,7 @@ class TestWorkDirManager:
     # end def
 
 
-    def test_archive_classification_dir(self,
+    def test_archive_workdir_files(self,
                                         intact_workdir_path : str,
                                         intact_workdir_copy_path : str):
         if os.path.isdir(intact_workdir_copy_path):
@@ -369,18 +371,28 @@ class TestWorkDirManager:
         shutil.copytree(intact_workdir_path, intact_workdir_copy_path)
 
         manager = BarapostWorkDirManager(intact_workdir_copy_path)
-        archive_dirpath = manager.archive_classification_dir()
+        archive_dirpath = manager.archive_workdir_files()
 
         assert os.path.isdir(archive_dirpath)
 
+        classif_archive_dirpath = os.path.join(archive_dirpath, 'classification')
+        assert os.path.isdir(classif_archive_dirpath)
         total_num_files_in_archive = len(glob.glob(
-            os.path.join(archive_dirpath, '*')
+            os.path.join(classif_archive_dirpath, '*')
         ))
         num_gz_files_in_archive = len(glob.glob(
-            os.path.join(archive_dirpath, '*.gz')
+            os.path.join(classif_archive_dirpath, '*.gz')
         ))
         only_gzipped_files = total_num_files_in_archive == num_gz_files_in_archive
         assert only_gzipped_files
+
+        fpaths_to_check = (
+            os.path.join(archive_dirpath, '{}.gz'.format(SEQDB_DB_FILE_NAME)),
+            os.path.join(archive_dirpath, '{}.gz'.format(TAX_DB_FILE_NAME)),
+        )
+        for fpath in fpaths_to_check:
+            assert os.path.isfile(fpath)
+        # end for
 
         num_tmp_files = len(
             glob.glob(
