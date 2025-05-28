@@ -9,7 +9,10 @@ import pytest
 
 from src.containers.Fasta import Fasta
 from src.containers.HTSRecord import HTSRecord
+from src.containers.AlignResult import AlignResult
 from src.util.BarapostWorkDirManager import BarapostWorkDirManager
+from src.config.classif_files import SEP as CLASSIF_COLUMN_SEP
+from src.config.classif_files import COMMENT_CHAR as CLASSIF_COMMENT_CHAR
 
 
 # >>> Fixtures >>>
@@ -385,6 +388,31 @@ class TestWorkDirManager:
             )
         )
         assert num_tmp_files == 0
+
+        shutil.rmtree(intact_workdir_copy_path)
+    # end def
+
+
+    def test_write_classification_header(self,
+                                         intact_workdir_path : str,
+                                         intact_workdir_copy_path : str,
+                                         input_hts_fpath_1 : str):
+        if os.path.isdir(intact_workdir_copy_path):
+            shutil.rmtree(intact_workdir_copy_path)
+        # end if
+        shutil.copytree(intact_workdir_path, intact_workdir_copy_path)
+
+        manager = BarapostWorkDirManager(intact_workdir_copy_path)
+        manager.write_classification_header(input_hts_fpath_1)
+
+        classif_fpath = manager.make_classification_fpath(input_hts_fpath_1)
+        with open(classif_fpath, 'rt') as input_handle:
+            lines = input_handle.readlines()
+        # end with
+
+        assert len(lines) == 2
+        assert lines[0].startswith(CLASSIF_COMMENT_CHAR)
+        assert len(lines[1].split(CLASSIF_COLUMN_SEP)) == len(AlignResult.__slots__)
 
         shutil.rmtree(intact_workdir_copy_path)
     # end def

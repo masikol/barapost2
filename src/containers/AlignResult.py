@@ -1,11 +1,9 @@
 
 from src.containers.Fastq import Q_to_pe
+from src.config.classif_files import SEP
 from src.util.strings import str_None_rep
 from src.config.align_result import HIT_SEP
 from src.util.simplify_read_id import simplify_read_id
-
-
-SEP = '\t'
 
 
 class AlignResult:

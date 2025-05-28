@@ -94,7 +94,6 @@ class SeqDbListManager:
 # end class
 
 
-# TODO: move to util?
 def _is_not_comment_line(string : str) -> bool:
     return not string.startswith(COMMENT_CHAR)
 # end def

@@ -11,6 +11,8 @@ from typing import Sequence, TypeAlias
 import src.filesystem as fs
 from src.time import humane_time
 from src.containers.HTSRecord import HTSRecord
+from src.config.classif_files import COMMENT_CHAR
+from src.containers.AlignResult import AlignResult
 from src.containers.Fastq import make_quality_dict
 
 # TODO: RELEASE: don't forget to move higher to some config abstraction level
@@ -239,5 +241,19 @@ class BarapostWorkDirManager:
         if os.path.exists(tmp_fpath):
             os.unlink(tmp_fpath)
         # end if
+    # end def
+
+
+    def write_classification_header(self, input_hts_fpath : str):
+        classif_fpath = self.make_classification_fpath(input_hts_fpath)
+        with open(classif_fpath, 'wt') as output_handle:
+            output_handle.write(
+                '{} This is the classification for the file {}\n' \
+                    .format(COMMENT_CHAR, input_hts_fpath)
+            )
+            output_handle.write(
+                AlignResult.get_header_str()
+            )
+        # end with
     # end def
 # end class

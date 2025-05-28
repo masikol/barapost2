@@ -14,16 +14,6 @@ logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-# TODO: do we really need this shit?
-# try:
-#     import ssl
-# except ImportError:
-#     pass
-# else:
-#     ssl._create_default_https_context = ssl._create_unverified_context
-# # end try
-
-
 def insistent_https(server : str,
                     server_path : str,
                     args : dict = None,

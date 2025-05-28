@@ -118,7 +118,7 @@ class TaxonomyManager:
     # end def
 
 
-    # TODO: add this function, but, uh, later; not sure about this
+    # TODO: LATER: add this function, but, uh, later; not sure about this
     # def recover_taxonomy(acc, hit_def, taxonomy_path):
     #     # Function recovers missing taxonomy by given accession.
     #     #

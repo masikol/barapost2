@@ -378,22 +378,10 @@ class ProberKernel:
         classif_record_count = self.work_dir_manager.count_classification_records(
             curr_input_fpath
         )
-        write_header, mode = False, 'at'
         if classif_record_count < 1:
-            write_header, mode = True, 'wt'
+            self.work_dir_manager.write_classification_header(curr_input_fpath)
         # end if
-        with open(classif_fpath, mode) as output_handle:
-            if write_header:
-                # TODO: move this to some another class/function
-                #   so that barapost-local-kernal would not dublicate this code
-                output_handle.write(
-                    '# This is the classification for the file {}\n' \
-                        .format(curr_input_fpath)
-                )
-                output_handle.write(
-                    AlignResult.get_header_str()
-                )
-            # end if
+        with open(classif_fpath, 'at') as output_handle:
             for align_result_list in align_results.values():
                 merged_align_result = reduce(
                     AlignResult.merge,
