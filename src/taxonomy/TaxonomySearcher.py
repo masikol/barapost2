@@ -161,6 +161,9 @@ class TaxonomySearcher:
                         accession_number : str) -> SeqTaxonomy:
         # Example of a response XML:
         #   https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&id=930166&retmode=xml
+
+        print(esummary_response)
+
         root = ElementTree.fromstring(esummary_response)
         tax_name = root.findall('./Taxon/ScientificName')[0].text.strip()
         requested_taxon_rank = root.findall('./Taxon/Rank')[0].text.strip()
@@ -177,15 +180,13 @@ class TaxonomySearcher:
             # end if
         # end for
 
-        if requested_taxon_rank == 'superkingdom':
-            requested_taxon_rank = 'domain'
-        # end if
+        print(tax_dict)
 
         seq_taxonomy = SeqTaxonomy(
             seq_id=accession_number,
             rank=requested_taxon_rank.capitalize(),
             tax_name=tax_name,
-            Domain=tax_dict['superkingdom'],
+            Domain=tax_dict['domain'],
             Phylum=tax_dict['phylum'],
             Class=tax_dict['class'],
             Order=tax_dict['order'],
@@ -198,9 +199,6 @@ class TaxonomySearcher:
 
     def _make_all_ncbi_ranks(self):
         ranks = list(reversed(RANKS_SORTED_DESCENDING))
-        # Replace the last one with 'superkingdom',
-        #   because domain is named superkingdom in NCBI taxonomy
-        ranks[-1] = 'superkingdom'
         # Make all of them lowercase for simplicity
         return list(
             map(

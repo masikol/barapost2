@@ -10,6 +10,7 @@ RANKS_SORTED_DESCENDING = [
 ]
 
 TAXONOMY_SEP = '\t'
+COMMENT_CHAR = '#'
 
 # All rank names start with a capital letter
 #     because 'class' is a Python keyword.

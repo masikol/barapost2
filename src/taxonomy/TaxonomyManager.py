@@ -3,14 +3,21 @@ import re
 import os
 
 import src.filesystem as fs
+from src.util.strings import is_comment_line
 from src.containers.SeqTaxonomy import SeqTaxonomy
 from src.taxonomy.TaxonomySearcher import TaxonomySearcher
 from src.config.taxonomy import TAXONOMY_SEP, \
+                                COMMENT_CHAR, \
                                 DB_FILE_NAME, \
                                 OWN_SEQ_TAX_SEP, \
                                 TAXONOMY_COLNAMES, \
                                 OWN_SEQ_TAXONOMY_FMT, \
                                 RANKS_SORTED_DESCENDING
+
+
+def _is_not_taxonomy_comment_line(string : str) -> bool:
+    return is_comment_line(string, COMMENT_CHAR)
+# end def
 
 
 class TaxonomyManager:
@@ -25,9 +32,9 @@ class TaxonomyManager:
         if not os.path.isfile(self._db_fpath) \
            or os.path.getsize(self._db_fpath) == 0:
             self._init_tax_file()
-            self._saved_seq_ids = set() # TODO: why not a taxonomy dict, like in SeqDbListManager?
+            self.taxonomy_dict = dict()
         # end if
-        self._saved_seq_ids = self._read_saved_seq_ids()
+        self.taxonomy_dict = self._read_taxonomy_dict()
     # end def
 
     def _init_tax_file(self):
@@ -40,34 +47,45 @@ class TaxonomyManager:
         # end with
     # end def
 
-    def _read_saved_seq_ids(self) -> dict:
-        with open(self._db_fpath, 'rt') as in_handle:
-            lines = in_handle.readlines()[1:] # pass the header
-            _saved_seq_ids = set(
-                map(
-                    lambda line: SeqTaxonomy.from_tsv_row(line.strip()).seq_id,
-                    lines
+    def _read_taxonomy_dict(self) -> dict:
+
+        with open(self._db_fpath, 'rt') as input_handle:
+            lines = tuple(
+                filter(
+                    _is_not_taxonomy_comment_line,
+                    input_handle.readlines()
                 )
-            )
-        # end with
-        return _saved_seq_ids
+            )[1:] # and skip the first (header) line
+        # end def
+
+        taxonomy_dict = dict()
+        for line in lines:
+            seq_taxonomy = SeqTaxonomy.from_tsv_row(line.strip())
+            taxonomy_dict[seq_taxonomy.seq_id] = seq_taxonomy
+        # end for
+        return taxonomy_dict
     # end def
 
 
     def add_taxonomy(self, seq_id : str, seq_taxonomy : SeqTaxonomy = None):
-        seq_id_is_new = not seq_id in self._saved_seq_ids
-
+        seq_id_is_new = not seq_id in self.taxonomy_dict
         if seq_id_is_new:
             if seq_taxonomy is None:
                 seq_taxonomy = self._taxonomy_searcher.search_taxonomy(seq_id)
             # end if
-            self._saved_seq_ids.add(seq_id)
-            with open(self._db_fpath, 'at') as out_handle:
+            self.taxonomy_dict[seq_id] = seq_taxonomy
+        # end if
+    # end def
+
+    def rewrite_taxonomy_file(self):
+        self._init_tax_file()
+        with open(self._db_fpath, 'at') as out_handle:
+            for seq_taxonomy in self.taxonomy_dict.values():
                 out_handle.write(
                     seq_taxonomy.to_tsv_row()
                 )
-            # end with
-        # end if
+            # end for
+        # end with
     # end def
 
     # TODO: move to some other class?

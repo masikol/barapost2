@@ -1,9 +1,15 @@
 
 import os
 
+from src.util.strings import is_comment_line
 from src.containers.AlignResult import AlignResult
 from src.containers.SeqDbListRecord import SeqDbListRecord
 from src.config.seq_db import DB_FILE_NAME, SEP, COMMENT_CHAR
+
+
+def _is_not_seq_db_comment_line(string : str) -> bool:
+    return is_comment_line(string, COMMENT_CHAR)
+# end def
 
 
 class SeqDbListManager:
@@ -35,7 +41,7 @@ class SeqDbListManager:
         with open(self.db_fpath, 'rt') as input_handle:
             lines = tuple(
                 filter(
-                    _is_not_comment_line,
+                    _is_not_seq_db_comment_line,
                     input_handle.readlines()
                 )
             )[1:] # and skip the first (header) line
@@ -92,8 +98,3 @@ class SeqDbListManager:
         # end with
     # end def
 # end class
-
-
-def _is_not_comment_line(string : str) -> bool:
-    return not string.startswith(COMMENT_CHAR)
-# end def

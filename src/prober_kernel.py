@@ -354,6 +354,7 @@ class ProberKernel:
             # end for
         # end if
         self.seq_db_list_manager.rewrite_db()
+        self.taxonomy_manager.rewrite_taxonomy_file()
         self._save_classif_results(align_results, curr_input_fpath)
     # end def
 

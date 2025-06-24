@@ -55,6 +55,7 @@ class TestTaxonomyManager:
 
         taxonomy_manager = TaxonomyManager(self._get_tmp_workdir_path())
         taxonomy_manager.add_taxonomy(accession_number_1)
+        taxonomy_manager.rewrite_taxonomy_file()
         observed = SeqTaxonomy.from_tsv_row(
             self._get_first_data_line(tmp_tax_fpath)
         )
