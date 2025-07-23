@@ -13,11 +13,6 @@ from src.config.taxonomy import RANKS_SORTED_DESCENDING, \
                                 MAX_SEARCH_ATTEMPT_COUNT
 
 
-# TODO: RELEASE: don't forget to move higher to some config abstraction level
-logging.basicConfig(level = logging.INFO)
-logger = logging.getLogger(__name__)
-
-
 class TaxonomySearcher:
 
     def search_taxonomy(self, accession_number: str) -> SeqTaxonomy:
@@ -28,7 +23,7 @@ class TaxonomySearcher:
         while error:
             try:
                 tax_id = self._acc2tax_id(accession_number)
-                taxonomy = self._tax_id2taxonomy(tax_id, accession_number)
+                taxonomy = self.tax_id2taxonomy(tax_id, accession_number)
             except TaxonomyParseError as err:
                 logging_str = 'Error. Cannot retrieve taxonomy for `{}`'.format(
                     accession_number
@@ -94,7 +89,7 @@ class TaxonomySearcher:
     # end def
 
     def _parse_taxid(self, elink_response : str) -> str:
-        # Example of an elink_response:
+        # Example of an elink_response: 
         # {
         # "header":{"type":"elink","version":"0.3"},
         # "linksets":[
@@ -119,9 +114,9 @@ class TaxonomySearcher:
     # end def
 
 
-    def _tax_id2taxonomy(self,
-                         tax_id : str,
-                         accession_number : str) -> SeqTaxonomy:
+    def tax_id2taxonomy(self,
+                        tax_id : str,
+                        accession_number : str = None) -> SeqTaxonomy:
         esummary_response = self._make_esummary_request(tax_id)
         taxonomy = self._try_parse_taxonomy(esummary_response, accession_number)
         return taxonomy
@@ -148,8 +143,13 @@ class TaxonomySearcher:
             taxonomy = self._parse_taxonomy(esummary_response, accession_number)
         except (IndexError,
                 XMLParseError) as err:
-            logging_str = 'Error: cannot parse taxonomy for sequence `{}`: {}' \
-                .format(accession_number, err)
+            if accession_number is None:
+                logging_str = 'Error: cannot parse taxonomy: {}' \
+                    .format(err)
+            else:
+                logging_str = 'Error: cannot parse taxonomy for sequence `{}`: {}' \
+                    .format(accession_number, err)
+            # end for
             logging.error(logging_str)
             raise TaxonomyParseError
         # end try
@@ -161,8 +161,6 @@ class TaxonomySearcher:
                         accession_number : str) -> SeqTaxonomy:
         # Example of a response XML:
         #   https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&id=930166&retmode=xml
-
-        print(esummary_response)
 
         root = ElementTree.fromstring(esummary_response)
         tax_name = root.findall('./Taxon/ScientificName')[0].text.strip()
@@ -179,8 +177,6 @@ class TaxonomySearcher:
                 tax_dict[rank] = tax_elem.findall('./ScientificName')[0].text.strip()
             # end if
         # end for
-
-        print(tax_dict)
 
         seq_taxonomy = SeqTaxonomy(
             seq_id=accession_number,

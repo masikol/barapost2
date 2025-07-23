@@ -3,6 +3,7 @@ from typing import Sequence
 
 from src.containers.Fastq import Fastq
 from src.util.prune_seq import prune_seq
+from src.config.prober import PACKET_MODE_0
 from src.reader_system.FileReader import FileReader
 
 
@@ -10,7 +11,7 @@ class FastqReader(FileReader):
 
     def __init__(self,
                  file_paths : Sequence[str],
-                 packet_mode : str = 'seq_count',
+                 packet_mode : str = PACKET_MODE_0,
                  packet_size : int = 1,
                  probing_batch_size : int = -1,
                  max_seq_len : int = -1,

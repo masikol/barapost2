@@ -6,10 +6,6 @@ import glob
 import shutil
 import logging
 
-# TODO: RELEASE: don't forget to move higher to some config abstraction level
-logging.basicConfig(level = logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 FASTA_EXTENSIONS = {
     'fasta',

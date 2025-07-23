@@ -11,21 +11,17 @@ from src.reader_system.FastaReader import FastaReader
 from src.reader_system.FastqReader import FastqReader
 from src.reader_system.Fast5Reader import Fast5Reader
 from src.reader_system.Pod5Reader  import Pod5Reader
+from src.config.prober import PACKET_MODE_0, PACKET_MODE_1
 # TODO: LATER: S/BLOW5 is to be implemented later
 # from src.reader_system.Slow5Reader import Slow5Reader
 # from src.reader_system.Blow5Reader import Blow5Reader
-
-
-# TODO: RELEASE: don't forget to move higher to some config abstraction level
-logging.basicConfig(level = logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 class ReaderWrapper(object):
 
     def __init__(self,
                  file_paths : Sequence[str],
-                 packet_mode : str = 'seq_count',
+                 packet_mode : str = PACKET_MODE_0,
                  packet_size : int = 1,
                  probing_batch_size : int = -1,
                  max_seq_len : int = -1,
@@ -60,17 +56,24 @@ class ReaderWrapper(object):
             allow_minus_one = True
         )
 
-        if self.packet_mode == 'seq_count' and self.max_seq_len != -1:
+        if self.packet_mode == PACKET_MODE_0 and self.max_seq_len != -1:
             logger.warning(
-                f'The `max_seq_len` parameter is avalible only in `sum_seq_len` mode.'
+                'The `max_seq_len` parameter is avalible only in `{}` mode.'.format(
+                    PACKET_MODE_1
+                )
             )
             logger.warning('Ignoring the `max_seq_len` parameter.')
             self.max_seq_len = -1
         # end if
 
-        if self.packet_mode not in ('seq_count', 'sum_seq_len'):
-            logger.warning(f'Invalid mode: `{self.packet_mode}`. Setting mode to `seq_count`.')
-            self.packet_mode = 'seq_count'
+        if self.packet_mode not in (PACKET_MODE_0, PACKET_MODE_1):
+            logger.warning(
+                'Invalid mode: `{}`. Setting mode to `{}`.'.format(
+                    self.packet_mode,
+                    PACKET_MODE_0
+                )
+            )
+            self.packet_mode = PACKET_MODE_0
         # end if
 
         # TODO: RELEASE: catch StopIteration? Or we will handle this at the arg parsing stage?

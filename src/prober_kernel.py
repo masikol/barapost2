@@ -20,11 +20,6 @@ from src.containers.Fastq import Fastq, make_quality_dict
 from src.util.BarapostWorkDirManager import BarapostWorkDirManager
 
 
-# TODO: RELEASE: don't forget to move higher to some config abstraction level
-logging.basicConfig(level = logging.INFO)
-logger = logging.getLogger(__name__)
-
-
 ActionCode : TypeAlias = str
 
 ACTION_RESUME  : ActionCode = '1'

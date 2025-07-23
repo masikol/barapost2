@@ -11,10 +11,6 @@ from src.containers.SeqRecord import SeqRecord
 SeqPacket : TypeAlias = Sequence[SeqRecord]
 
 
-logging.basicConfig(level = logging.INFO)
-logger = logging.getLogger(__name__)
-
-
 class Fastq(SeqRecord):
 
     __slots__ = (

@@ -17,10 +17,6 @@ from src.config.classif_files import COMMENT_CHAR
 from src.containers.AlignResult import AlignResult
 from src.containers.Fastq import make_quality_dict
 
-# TODO: RELEASE: don't forget to move higher to some config abstraction level
-logging.basicConfig(level = logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 SeqPacket : TypeAlias = Sequence[HTSRecord]
 

@@ -8,12 +8,8 @@ from abc import ABC, abstractmethod
 from typing import Generator, Callable, Sequence, MutableSequence
 
 import src.filesystem as fs
+from src.config.prober import PACKET_MODE_0, PACKET_MODE_1
 from src.containers.HTSRecord import HTSRecord
-
-
-# TODO: RELEASE: don't forget to move higher to some config abstraction level
-logging.basicConfig(level = logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 class FileReader(ABC):
@@ -23,7 +19,7 @@ class FileReader(ABC):
     #  end processing etc
     def __init__(self,
                  file_paths : Sequence[str],
-                 packet_mode : str = 'seq_count',
+                 packet_mode : str = PACKET_MODE_0,
                  packet_size : int = 1,
                  probing_batch_size : int = -1,
                  max_seq_len : int = -1,
@@ -46,14 +42,22 @@ class FileReader(ABC):
         self._n_records_read_total = 0
         self._end_of_curr_file = False
 
-        if self.packet_mode == 'seq_count':
+        if self.packet_mode == PACKET_MODE_0:
             self._make_packet = self._make_seq_count_packet
-        elif self.packet_mode == 'sum_seq_len':
+        elif self.packet_mode == PACKET_MODE_1:
             self._make_packet = self._make_sum_seq_len_packet
         else:
-            raise ValueError(
-                f'Indalid packet_mode: `{self.packet_mode}`. Allowed modes: `seq_count`, `sum_seq_len`.'
+            allowed_modes = ', '.join(
+                list(map(
+                    lambda x: f'`{x}`',
+                    (PACKET_MODE_0, PACKET_MODE_0)
+                ))
             )
+            msg = 'Indalid packet_mode: `{}`. Allowed modes: {}.'.format(
+                self.packet_mode,
+                allowed_modes
+            )
+            raise ValueError(msg)
         # end if
 
         if max_seq_len == -1:
@@ -101,7 +105,7 @@ class FileReader(ABC):
             # end if
             self._packet.append(record)
 
-            if self.packet_mode == 'sum_seq_len':
+            if self.packet_mode == PACKET_MODE_1:
                 self._sum_seq_len_read += self._increment_sum(record.seq)
             # end if
 

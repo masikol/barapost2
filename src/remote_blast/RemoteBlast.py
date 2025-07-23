@@ -16,10 +16,6 @@ from src.network.insistent_https import insistent_https
 from src.config.remote_blast import PROGRAM, HITLIST_SIZE, DATABASE, \
                                     SERVER, SERVER_PATH, AUTHOR_EMAIL, TOOL_NAME
 
-# TODO: RELEASE: don't forget to move higher to some config abstraction level
-logging.basicConfig(level = logging.INFO)
-logger = logging.getLogger(__name__)
-
 AlignResultDict : TypeAlias = dict[str, Sequence[AlignResult]]
 
 

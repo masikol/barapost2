@@ -10,10 +10,6 @@ from src.writer_system.Fast5Writer import Fast5Writer
 # from src.writer_system.Blow5Writer import Blow5Writer
 # from src.writer_system.Slow5Writer import Slow5Writer
 
-# TODO: RELEASE: don't forget to move higher to some config abstraction level
-logging.basicConfig(level = logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 class WriterWrapper(object):
     def __init__(self,
