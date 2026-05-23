@@ -1,6 +1,5 @@
 
 from typing import Sequence
-from functools import reduce
 
 from src.util.strings import str_None_rep
 from src.config.taxonomy import TAXONOMY_SEP, \
@@ -102,7 +101,7 @@ class SeqTaxonomy:
         )
         ranks = reversed(RANKS_SORTED_DESCENDING)
         for rank, tax_name in zip(ranks, own_seq_names):
-            if not tax_name is None:
+            if tax_name is not None:
                 return rank, tax_name
             # end if
         # end def

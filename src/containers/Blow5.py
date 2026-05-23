@@ -6,15 +6,15 @@ class Blow5(HTSRecord):
 
     __slots__ = ('record')
 
-    def __init__(self, record : dict):
+    def __init__(self, record : dict) -> None:
         self.record = record.copy()
     # end def
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'record : {self.record}'
     # end def
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Blow5(record={self.record!r})'
     # end def
 # end class

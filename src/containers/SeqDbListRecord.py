@@ -1,5 +1,6 @@
 
 import sys
+import logging
 
 from src.config.seq_db import SEP
 from src.util.strings import str_None_rep
@@ -20,7 +21,7 @@ class SeqDbListRecord:
                  accession : str,
                  record_name : str,
                  hit_count : int = 0,
-                 replicons_checked : bool = False):
+                 replicons_checked : bool = False) -> None:
         self.accession         = accession
         self.record_name       = record_name
         self.hit_count         = hit_count
@@ -28,7 +29,7 @@ class SeqDbListRecord:
     # end def
 
 
-    def increment(self, value : int = 1):
+    def increment(self, value : int = 1) -> None:
         self.hit_count += value
     # end def
 
@@ -96,7 +97,11 @@ class SeqDbListRecord:
 
 
     def __eq__(self, other : object) -> bool:
-        return type(self)             == type(other) \
+        return isinstance(self, type(other)) \
+           and hasattr(other, 'accession')         \
+           and hasattr(other, 'record_name')       \
+           and hasattr(other, 'hit_count')         \
+           and hasattr(other, 'replicons_checked') \
            and self.accession         == other.accession \
            and self.record_name       == other.record_name \
            and self.hit_count         == other.hit_count \

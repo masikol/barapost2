@@ -184,7 +184,7 @@ class ProberArgsParser:
     def _parse_input_fpaths(self,
                             raw_args : argparse.Namespace) -> Sequence[str]:
         input_fpaths = raw_args.input_files
-        if not raw_args.indir is None:
+        if raw_args.indir is not None:
             input_fpaths = input_fpaths + self._parse_indir_argument(raw_args)
         # end if
         input_fpaths = sorted(
@@ -257,7 +257,7 @@ class ProberArgsParser:
     def _parse_packet_mode(self, raw_args : argparse.Namespace) -> str:
         packet_mode = raw_args.packet_mode
         allowed_modes = (PACKET_MODE_0, PACKET_MODE_1)
-        if not packet_mode in allowed_modes:
+        if packet_mode not in allowed_modes:
             allowed_str = ', '.join(
                 list(map(
                     lambda x: f'`{x}`',

@@ -10,7 +10,7 @@ _ont_read_pattern : re.Pattern = re.compile(
 )
 
 
-def simplify_read_id(read_id : str):
+def simplify_read_id(read_id : str) -> str:
     srch_ont_read = re.search(_ont_read_pattern, read_id)
     if srch_ont_read is None:
         return read_id.partition(' ')[0]

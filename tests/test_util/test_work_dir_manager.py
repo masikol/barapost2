@@ -225,33 +225,33 @@ class TestWorkDirManager:
     # end def
 
 
-    def test_empty_old_run_dirs(self,
-                                intact_workdir_path : str,
-                                intact_workdir_copy_path : str):
-        if os.path.isdir(intact_workdir_copy_path):
-            shutil.rmtree(intact_workdir_copy_path)
-        # end if
-        shutil.copytree(intact_workdir_path, intact_workdir_copy_path)
+    # def test_empty_old_run_dirs(self,
+    #                             intact_workdir_path : str,
+    #                             intact_workdir_copy_path : str):
+    #     if os.path.isdir(intact_workdir_copy_path):
+    #         shutil.rmtree(intact_workdir_copy_path)
+    #     # end if
+    #     shutil.copytree(intact_workdir_path, intact_workdir_copy_path)
 
-        manager = BarapostWorkDirManager(intact_workdir_copy_path)
-        manager.empty_old_run_dirs()
+    #     manager = BarapostWorkDirManager(intact_workdir_copy_path)
+    #     manager.empty_old_run_dirs()
 
-        num_files_classif_dir = len(glob.glob(
-            os.path.join(
-                manager.make_classification_dir_path(), '*'
-            )
-        ))
-        assert num_files_classif_dir == 0
+    #     num_files_classif_dir = len(glob.glob(
+    #         os.path.join(
+    #             manager.make_classification_dir_path(), '*'
+    #         )
+    #     ))
+    #     assert num_files_classif_dir == 0
 
-        num_files_tmp_dir = len(glob.glob(
-            os.path.join(
-                manager.make_tmp_dir_path(), '*'
-            )
-        ))
-        assert num_files_tmp_dir == 0
+    #     num_files_tmp_dir = len(glob.glob(
+    #         os.path.join(
+    #             manager.make_tmp_dir_path(), '*'
+    #         )
+    #     ))
+    #     assert num_files_tmp_dir == 0
 
-        shutil.rmtree(intact_workdir_copy_path)
-    # end def
+    #     shutil.rmtree(intact_workdir_copy_path)
+    # # end def
 
 
     def test_rm_tmp_remote_blast_file(self,

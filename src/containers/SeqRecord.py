@@ -4,7 +4,8 @@ from src.containers.HTSRecord import HTSRecord
 
 class SeqRecord(HTSRecord):
 
-    def __init__(self):
+    def __init__(self) -> None:
+        self.seq: str ='STUB'
         raise NotImplementedError()
     # end def
 

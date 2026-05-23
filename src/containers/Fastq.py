@@ -1,8 +1,6 @@
 
 import math
-import logging
 import statistics
-from functools import partial
 from typing import Sequence, TypeAlias
 
 from src.containers.SeqRecord import SeqRecord
@@ -28,12 +26,12 @@ class Fastq(SeqRecord):
                  comment : str,
                  quality : str,
                  phred_offset : int = 33):
-        self.header = header
-        self.seq = seq
-        self.comment = comment
-        self.quality = quality
-        self.phred_offset = phred_offset # arg parsing ensures that phred_offset is valid
-        self._average_quality = None
+        self.header : str = header
+        self.seq : str = seq
+        self.comment : str = comment
+        self.quality: str = quality
+        self.phred_offset: int = phred_offset # arg parsing ensures that phred_offset is valid
+        self._average_quality : float | None = None
     # end def
 
     def get_average_quality(self) -> float:
@@ -55,11 +53,11 @@ class Fastq(SeqRecord):
 
     def _phred_char_to_pe(self, char : str) -> float:
         # pe is error probability
-        Q = ord(char) - self.phred_offset
+        Q : int = ord(char) - self.phred_offset
         return Q_to_pe(Q)
     # end def
 
-    def __str__(self):
+    def __str__(self) -> str:
         seq_concise     = self._get_consice_str(self.seq)
         quality_concise = self._get_consice_str(self.quality)
         return f'''header: {self.header},
@@ -68,7 +66,7 @@ comment: {self.comment},
 quality: {quality_concise}.\n'''
     # end def
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         seq_concise     = self._get_consice_str(self.seq)
         quality_concise = self._get_consice_str(self.quality)
         return f'''Fastq(
@@ -79,7 +77,7 @@ quality: {quality_concise}.\n'''
 )'''
     # end def
 
-    def _get_consice_str(self, string):
+    def _get_consice_str(self, string: str) -> str:
         n_chars_show = 30
         if len(self.seq) <= n_chars_show*2:
             return self.seq
@@ -107,21 +105,20 @@ quality: {quality_concise}.\n'''
 # end class
 
 
-def Q_to_pe(Q : float) -> float:
-    return 10.0 ** (-Q / 10.0)
+def Q_to_pe(Q : int | float) -> float:
+    power = -Q / 10.0
+    return float(10.0 ** power)
 # end def
 
 
-def pe_to_Q(error_prob : float):
+def pe_to_Q(error_prob : float) -> float:
     return -10.0 * math.log10(error_prob)
 # end def
 
 
-def make_quality_dict(packet : SeqPacket) -> dict[str, float]:
-    packet_type = type(
-        next(iter(packet))
-    )
-    if packet_type == Fastq:
+def make_quality_dict(packet : SeqPacket) -> dict[str, float | None]:
+    first_record = next(iter(packet))
+    if isinstance(first_record, Fastq):
         return {
             sr.get_seq_id() : sr.get_average_quality()
                 for sr in packet

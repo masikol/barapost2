@@ -6,18 +6,18 @@ class Fasta(SeqRecord):
 
     __slots__ = ('header', 'seq')
 
-    def __init__(self, header : str, seq : str):
+    def __init__(self, header : str, seq : str) -> None:
         self.header = header
         self.seq = seq
     # end def
 
-    def __str__(self):
+    def __str__(self) -> str:
         seq_concise = self._get_consice_seq()
         return f'''header : {self.header},
 seq: {seq_concise}.\n'''
     # end def
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         seq_concise = self._get_consice_seq()
         return f'''Fasta(
     header={self.header!r},
@@ -25,7 +25,7 @@ seq: {seq_concise}.\n'''
 )'''
     # end def
 
-    def _get_consice_seq(self):
+    def _get_consice_seq(self) -> str:
         n_chars_show = 30
         if len(self.seq) <= n_chars_show*2:
             return self.seq

@@ -8,7 +8,7 @@ from src.config.seq_db import DB_FILE_NAME, SEP, COMMENT_CHAR
 
 
 def _is_not_seq_db_comment_line(string : str) -> bool:
-    return is_comment_line(string, COMMENT_CHAR)
+    return not is_comment_line(string, COMMENT_CHAR)
 # end def
 
 
